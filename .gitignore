@@ -1,0 +1,10 @@
+
+# Bash Base Framework
+dev/core/commands/core-upgrade/version.sh
+dev/app/config/dimensions.sh
+dev/.deploy/
+
+# Creatuity Base
+
+/playground.*.php
+.idea/

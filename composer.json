@@ -1,0 +1,22 @@
+{
+    "name": "joshuaswarren/magento-adobe-commerce-base2",
+    "description": "Creatuity Base for Magento 2",
+    "type": "magento2-module",
+    "version": "1.0.0",
+    "authors": [
+        {
+            "name": "Joshua Warren",
+            "homepage": "https://warrenappliedlabs.com/"
+        }
+    ],
+    "require": {
+        "php": ">=7.4.0"
+    },
+    "autoload": {
+        "files": ["registration.php"],
+        "psr-4": {
+            "Creatuity\\Base\\": ""
+        }
+    }
+}
+
