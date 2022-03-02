@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * @license https://warrenappliedlabs.com/license
- * @copyright Copyright (c) 2008-2018 Joshua Warren (https://warrenappliedlabs.com)
+ * @copyright Copyright (c) 2008-* Joshua Warren (https://warrenappliedlabs.com)
  */
 class BackwardCompatibilityHelper
 {

@@ -3,49 +3,37 @@
 namespace Creatuity\Base\Helpers\Creatuity\Subjects;
 
 use Creatuity\Base\Helpers\Creatuity;
+use Exception;
 use Magento\Config\Model\ResourceModel\Config;
 use Magento\Config\Model\ResourceModel\Config\Data\CollectionFactory;
 use Magento\Config\Model\ResourceModel\Config\Data\Collection;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\App\ScopeDefault;
+use Magento\Framework\App\ScopeInterface as FrameworkScopeInterface;
 use Magento\Store\Model\ScopeInterface;
 
 /**
  * @license https://warrenappliedlabs.com/license
- * @copyright Copyright (c) 2008-2020 Joshua Warren (https://warrenappliedlabs.com)
+ * @copyright Copyright (c) 2008-* Joshua Warren (https://warrenappliedlabs.com)
  */
 class Setting extends SubjectAbstract
 {
     const UPDATE_PREPEND = 'prepend';
     const UPDATE_APPEND = 'append';
 
-    /**
-     * @var Config
-     */
-    protected $configResource;
+    private Config $configResource;
+    private ScopeConfigInterface $appConfig;
+    private CollectionFactory $configCollectionFactory;
+    private string $scopeType;
+    private int $scope;
 
-    /**
-     * @var ScopeConfigInterface
-     */
-    protected $appConfig;
-
-    /**
-     * @var CollectionFactory
-     */
-    private $configCollectionFactory;
-
-    /**
-     * @var string
-     */
-    protected $scopeType;
-
-    /**
-     * @var int
-     */
-    protected $scope;
-
-    public function __construct(Config $config, ScopeConfigInterface $appConfig, CollectionFactory $configCollectionFactory, Creatuity $creatuity, $scopeType = 'default', $scope = 0)
-    {
+    public function __construct(
+        Config $config,
+        ScopeConfigInterface $appConfig,
+        CollectionFactory $configCollectionFactory,
+        Creatuity $creatuity,
+        $scopeType = FrameworkScopeInterface::SCOPE_DEFAULT,
+        $scope = 0
+    ) {
         parent::__construct($creatuity);
         $this->configResource = $config;
         $this->appConfig = $appConfig;
@@ -54,14 +42,14 @@ class Setting extends SubjectAbstract
         $this->scope = $scope;
     }
 
-    public function saveMany(array $settings, $scopeType = null, $scope = null)
+    public function saveMany(array $settings, string $scopeType = null, int $scope = null): void
     {
         foreach ($settings as $name => $value) {
             $this->save($name, $value, $scopeType, $scope);
         }
     }
 
-    public function save($name, $value, $scopeType = null, $scope = null)
+    public function save(string $name, $value, string $scopeType = null, int $scope = null): void
     {
         $this->configResource->saveConfig($name, $value,
             $this->scopeType($scopeType),
@@ -72,17 +60,17 @@ class Setting extends SubjectAbstract
         $this->creatuity()->report()->printSuccess("Setting changed: '{$name}' => {$value}");
     }
 
-    public function prepened($name, $value, $scopeType = null, $scope = null)
+    public function prepened(string $name, $value, string $scopeType = null, int $scope = null): void
     {
         $this->update(self::UPDATE_PREPEND, $name, $value, $scopeType, $scope);
     }
 
-    public function append($name, $value, $scopeType = null, $scope = null)
+    public function append(string $name, $value, string $scopeType = null, int $scope = null): void
     {
         $this->update(self::UPDATE_APPEND, $name, $value, $scopeType, $scope);
     }
 
-    private function update($type, $name, $value, $scopeType = null, $scope = null)
+    private function update(string $type, string $name, $value, string $scopeType = null, int $scope = null): void
     {
         $oldValue = $this->getOldValue($name, $scopeType, $scope);
 
@@ -101,21 +89,21 @@ class Setting extends SubjectAbstract
     {
         /** @var  Collection $collection */
         $collection = $this->configCollectionFactory->create();
-        $collection->addFieldToFilter('scope', $scopeType ?? ScopeDefault::SCOPE_DEFAULT);
+        $collection->addFieldToFilter('scope', $scopeType ?? FrameworkScopeInterface::SCOPE_DEFAULT);
         $collection->addFieldToFilter('scope_id', $scope ?? 0);
         $collection->addFieldToFilter('path', $name);
 
         return (string)$collection->getFirstItem()->getData('value');
     }
 
-    public function deleteMany(array $names, $scopeType = null, $scope = null)
+    public function deleteMany(array $names, string $scopeType = null, int $scope = null): void
     {
         foreach($names as $name) {
             $this->delete($name, $scopeType, $scope);
         }
     }
 
-    public function delete($name, $scopeType = null, $scope = null)
+    public function delete(string $name, string $scopeType = null, int $scope = null): void
     {
         $this->configResource->deleteConfig($name,
             $this->scopeType($scopeType),
@@ -125,7 +113,15 @@ class Setting extends SubjectAbstract
         $this->creatuity()->report()->printSuccess("Setting deleted: '{$name}'");
     }
 
-    public function load($name, $default = null, $scopeType = null, $scope = null)
+    /**
+     * @param string $name
+     * @param mixed|null $default
+     * @param string|null $scopeType
+     * @param int|null $scope
+     * @return mixed|null
+     * @throws Exception
+     */
+    public function load(string $name, $default = null, string $scopeType = null, int $scope = null)
     {
         $value = $this->appConfig->getValue($name,
             $this->scopeType($scopeType),
@@ -138,7 +134,10 @@ class Setting extends SubjectAbstract
         return $value;
     }
 
-    protected function scopeType($scopeType = null)
+    /**
+     * @throws Exception
+     */
+    private function scopeType(string $scopeType = null): string
     {
         if ($scopeType === null) {
             $ret = $this->scopeType;
@@ -156,13 +155,13 @@ class Setting extends SubjectAbstract
         ];
 
         if (!in_array($ret, $allowed)) {
-            throw new \Exception("Invalid scope. Expected one of: " . implode(', ', $allowed));
+            throw new Exception('Invalid scope. Expected one of: ' . implode(', ', $allowed));
         }
 
         return $ret;
     }
 
-    protected function scope($scope = null)
+    private function scope(int $scope = null): int
     {
         if ($scope === null) {
             $ret = $this->scope;
@@ -174,9 +173,11 @@ class Setting extends SubjectAbstract
     }
 
     /**
+     * @param int $storeId
      * @return Setting
+     * @throws Exception
      */
-    public function settingsForStore($storeId)
+    public function settingsForStore(int $storeId): self
     {
         return $this->creatuity->setting(
             $this->creatuity()->store()->storeViewModel($storeId)->getId(), ScopeInterface::SCOPE_STORES
@@ -184,9 +185,11 @@ class Setting extends SubjectAbstract
     }
 
     /**
+     * @param int $storeGroupId
      * @return Setting
+     * @throws Exception
      */
-    public function settingsForStoreGroup($storeGroupId)
+    public function settingsForStoreGroup(int $storeGroupId): self
     {
         return $this->creatuity->setting(
             $this->creatuity()->store()->storeGroupModel($storeGroupId)->getId(), ScopeInterface::SCOPE_GROUP
@@ -194,9 +197,11 @@ class Setting extends SubjectAbstract
     }
 
     /**
+     * @param int $websiteId
      * @return Setting
+     * @throws Exception
      */
-    public function settingsForWebsite($websiteId)
+    public function settingsForWebsite(int $websiteId): self
     {
         return $this->creatuity->setting(
             $this->creatuity()->store()->websiteModel($websiteId)->getId(), ScopeInterface::SCOPE_WEBSITES

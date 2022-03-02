@@ -4,7 +4,7 @@ namespace Creatuity\Base\Helpers\Creatuity\Subjects\Scopes\Scripts;
 
 /**
  * @license https://warrenappliedlabs.com/license
- * @copyright Copyright (c) 2008-2021 Joshua Warren (https://warrenappliedlabs.com)
+ * @copyright Copyright (c) 2008-* Joshua Warren (https://warrenappliedlabs.com)
  */
 class Cms extends \Creatuity\Base\Helpers\Creatuity\Subjects\Cms
 {

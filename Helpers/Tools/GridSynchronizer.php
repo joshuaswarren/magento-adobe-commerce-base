@@ -4,26 +4,17 @@ namespace Creatuity\Base\Helpers\Tools;
 
 use Psr\Log\LoggerInterface;
 use Magento\Sales\Model\ResourceModel\Grid;
-use Symfony\Component\Console\Output\ConsoleOutput;
-
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * @license https://warrenappliedlabs.com/license
- * @copyright Copyright (c) 2008-2018 Joshua Warren (https://warrenappliedlabs.com/)
+ * @copyright Copyright (c) 2008-* Joshua Warren (https://warrenappliedlabs.com)
  */
-
 class GridSynchronizer
 {
+    private array $gridUpdaters = [];
 
-    /**
-     * @var Grid[]
-     */
-    protected $gridUpdaters = [];
-
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger;
+    private LoggerInterface $logger;
 
     public function __construct(
         Grid $orderGridUpdater,
@@ -40,7 +31,7 @@ class GridSynchronizer
     }
 
 
-    public function synchronize(ConsoleOutput $out, ...$types)
+    public function synchronize(OutputInterface $out, ...$types): void
     {
         foreach($this->provideGrids($types) as $type => $grid) {
             $out->writeln("Synchronizing '$type' grid...");
@@ -49,7 +40,7 @@ class GridSynchronizer
         $out->writeln("Synchronization of adminhtml sales grids is done.");
     }
 
-    protected function synchronizeGrid(Grid $grid )
+    protected function synchronizeGrid(Grid $grid): void
     {
         try {
             $grid->refreshBySchedule();
@@ -61,7 +52,7 @@ class GridSynchronizer
     /**
      * @return Grid[]
      */
-    protected function provideGrids($types)
+    protected function provideGrids(array $types): array
     {
         if (empty($types)) {
             return $this->gridUpdaters;

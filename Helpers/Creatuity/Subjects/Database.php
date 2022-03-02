@@ -3,28 +3,29 @@
 namespace Creatuity\Base\Helpers\Creatuity\Subjects;
 
 use Creatuity\Base\Helpers\Creatuity;
+use Exception;
 use Magento\Framework\DB\Adapter\AdapterInterface;
 use Magento\Framework\App\ResourceConnection;
+use Zend_Db_Statement_Exception;
 
 /**
  * @license https://warrenappliedlabs.com/license
- * @copyright Copyright (c) 2008-2018 Joshua Warren (https://warrenappliedlabs.com)
+ * @copyright Copyright (c) 2008-* Joshua Warren (https://warrenappliedlabs.com)
  */
 class Database extends SubjectAbstract
 {
-    /**
-     * @var ResourceConnection
-     */
-    protected $connectionsPool;
+    private ResourceConnection $connectionsPool;
 
-    public function __construct(Creatuity $creatuity, ResourceConnection $connectionsPool)
-    {
+    public function __construct(
+        Creatuity $creatuity,
+        ResourceConnection $connectionsPool
+    ) {
         parent::__construct($creatuity);
         $this->connectionsPool = $connectionsPool;
     }
 
 
-    public function runSqlFile($sqlIdentifier)
+    public function runSqlFile(string $sqlIdentifier): void
     {
         $sqlQuery = $this->creatuity()->resources()->fileRead("data/sql/{$sqlIdentifier}.sql");
 
@@ -33,7 +34,7 @@ class Database extends SubjectAbstract
         $this->creatuity()->report()->printSuccess("Executed sql file from 'data/sql/{$sqlIdentifier}.sql'");
     }
 
-    public function runSql($sqlQuery)
+    public function runSql(string $sqlQuery): void
     {
         // Hack for segmentation fault PCRE bug for preg_replace()
         // see http://stackoverflow.com/questions/20750757/php-segmentation-fault-during-preg-replace
@@ -42,7 +43,13 @@ class Database extends SubjectAbstract
         $this->dbConnection()->multiQuery($sqlQuery);
     }
 
-    public function runInTransaction($callback, array $args = [])
+    /**
+     * @param callable $callback
+     * @param array $args
+     * @return mixed
+     * @throws Exception
+     */
+    public function runInTransaction(callable $callback, array $args = [])
     {
         try {
             $this->dbConnection()->beginTransaction();
@@ -52,13 +59,19 @@ class Database extends SubjectAbstract
             $this->dbConnection()->commit();
 
             return $return;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->dbConnection()->rollBack();
             throw $e;
         }
     }
 
-    public function runWithForeignKeysDisabled($callback, array $args = [])
+    /**
+     * @param callable $callback
+     * @param array $args
+     * @return mixed
+     * @throws Zend_Db_Statement_Exception
+     */
+    public function runWithForeignKeysDisabled(callable $callback, array $args = [])
     {
         $foreignKeysStatus = (int)$this->dbConnection()->query('SELECT @@SESSION.FOREIGN_KEY_CHECKS;')->fetchColumn(0);
         try {
@@ -70,24 +83,17 @@ class Database extends SubjectAbstract
         }
     }
 
-    /**
-     * @param string $table
-     * @return string
-     */
-    public function tableName($table)
+    public function tableName(string $table): string
     {
         return $this->connectionsPool->getTableName($table);
     }
 
-    /**
-     * @return AdapterInterface
-     */
-    public function dbConnection()
+    public function dbConnection(): AdapterInterface
     {
         return $this->connectionsPool->getConnection();
     }
 
-    public function normalizeDataSetForMultipleInsert(array $dataSet)
+    public function normalizeDataSetForMultipleInsert(array $dataSet): array
     {
         $columnsOfEntitiesToCreate = [];
         foreach ($dataSet as $row) {

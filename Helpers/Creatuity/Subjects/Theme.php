@@ -10,19 +10,12 @@ use Magento\Theme\Model\ResourceModel\Theme\CollectionFactory;
 
 /**
  * @license https://warrenappliedlabs.com/license
- * @copyright Copyright (c) 2008-2018 Joshua Warren (https://warrenappliedlabs.com)
+ * @copyright Copyright (c) 2008-* Joshua Warren (https://warrenappliedlabs.com)
  */
 class Theme extends SubjectAbstract
 {
-    /**
-     * @var CollectionFactory
-     */
-    protected $collectionFactory;
-
-    /**
-     * @var Config
-     */
-    protected $themeConfig;
+    private CollectionFactory $collectionFactory;
+    private Config $themeConfig;
 
     public function __construct(
         CollectionFactory $collectionFactory,
@@ -35,7 +28,7 @@ class Theme extends SubjectAbstract
         $this->themeConfig = $themeConfig;
     }
 
-    public function assignThemeToDefaultStore($themeCode)
+    public function assignThemeToDefaultStore(string $themeCode): void
     {
         $this->assignTheme(
             $themeCode,
@@ -46,14 +39,14 @@ class Theme extends SubjectAbstract
         $this->creatuity()->report()->printSuccess("'$themeCode' theme has been assigned to default store'");
     }
 
-    public function assignThemeToStore($themeCode, array $stores, $scope)
+    public function assignThemeToStore(string $themeCode, array $stores, string $scope): void
     {
         $this->assignTheme($themeCode, $stores, $scope);
 
         $this->creatuity()->report()->printSuccess("'$themeCode' theme has been activated'");
     }
 
-    protected function assignTheme($themeCode, array $stores, $scope)
+    protected function assignTheme($themeCode, array $stores, string $scope): void
     {
         foreach ($this->collectionFactory->create()->loadRegisteredThemes() as $theme) {
             if ($theme->getCode() === $themeCode) {

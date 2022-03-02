@@ -105,7 +105,7 @@ abstract class AbstractPatch implements PatchInterface, ReportObserverInterface,
         $this->creatuity()->report()->printEmptySeparator(2);
     }
 
-    public function handleReportEvent($name, array $args)
+    public function handleReportEvent(string $name, array $args): void
     {
         $this->isSomethingPrinted = true;
     }

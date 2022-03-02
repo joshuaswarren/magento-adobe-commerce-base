@@ -2,6 +2,7 @@
 
 namespace Creatuity\Base\Helpers\Creatuity\Subjects;
 
+use Closure;
 use Creatuity\Base\Helpers\Creatuity;
 use Creatuity\Base\Model\CsvParser\CsvParserInterface;
 use Creatuity\Base\Model\CsvParser\CsvParserInterfaceFactory;
@@ -9,19 +10,12 @@ use Creatuity\Base\Model\CsvParser\OutputInterface;
 
 /**
  * @license https://warrenappliedlabs.com/license
- * @copyright Copyright (c) 2008-2018 Joshua Warren (https://warrenappliedlabs.com)
+ * @copyright Copyright (c) 2008-* Joshua Warren (https://warrenappliedlabs.com)
  */
 class Csv extends SubjectAbstract implements CsvParserInterface, SubjectForModuleInterface
 {
-    /**
-     * @var CsvParserInterface
-     */
-    protected $csvParser;
-
-    /**
-     * @var string
-     */
-    protected $moduleName;
+    private CsvParserInterface $csvParser;
+    private string $moduleName;
 
     public function __construct(CsvParserInterfaceFactory $csvParserInterfaceFactory, Creatuity $creatuity)
     {
@@ -29,11 +23,7 @@ class Csv extends SubjectAbstract implements CsvParserInterface, SubjectForModul
         $this->csvParser = $csvParserInterfaceFactory->create();
     }
 
-
-    /**
-     * @param string $fileName
-     */
-    public function parse($fileName)
+    public function parse(string $fileName): self
     {
         $this->csvParser->parse(
             $this->creatuity()->resources($this->moduleName)->fileAbsPath($this->csvFilesPath() . DIRECTORY_SEPARATOR . $fileName)
@@ -41,123 +31,85 @@ class Csv extends SubjectAbstract implements CsvParserInterface, SubjectForModul
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    protected function csvFilesPath()
+    protected function csvFilesPath(): string
     {
         return '';
     }
 
-    /**
-     * @return array|null
-     */
-    public function run()
+    public function run(): ?array
     {
         return $this->csvParser->run();
     }
 
-    /**
-     * @return \Traversable
-     */
     #[\ReturnTypeWillChange]
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         return $this->csvParser->getIterator();
     }
 
     /**
-     * @param \Closure|string $logicModelInstanceOrName
-     * @return $this
+     * @param Closure|string $logicModelInstanceOrName
+     * @return self
      */
-    public function applyLogic($logicModelInstanceOrName)
+    public function applyLogic($logicModelInstanceOrName): self
     {
         $this->csvParser->applyLogic($logicModelInstanceOrName);
         return $this;
     }
 
-    public function applyChunkLogic($logicModelInstanceOrName)
+    /**
+     * @param Closure|string $logicModelInstanceOrName
+     * @return self
+     */
+    public function applyChunkLogic($logicModelInstanceOrName): self
     {
         $this->csvParser->applyChunkLogic($logicModelInstanceOrName);
         return $this;
     }
 
-    /**
-     * @param int $showProgressOnEveryChunk
-     * @param string $progressMessage
-     * @return $this
-     */
-    public function showProgress(OutputInterface $output = null, $showProgressOnEveryChunk = null, $progressMessage = null)
+    public function showProgress(OutputInterface $output = null, int $showProgressOnEveryChunk = null, string $progressMessage = null): self
     {
         $this->csvParser->showProgress($output, $showProgressOnEveryChunk, $progressMessage);
         return $this;
     }
 
-    /**
-     * @param string $separator
-     * @return $this
-     */
-    public function columnSeparator($separator)
+    public function columnSeparator(string $separator): self
     {
         $this->csvParser->columnSeparator($separator);
         return $this;
     }
 
-    /**
-     * @param bool $withTrimmingValues
-     * @return $this
-     */
-    public function withTrimmingValues($withTrimmingValues)
+    public function withTrimmingValues(bool $withTrimmingValues): self
     {
         $this->csvParser->withTrimmingValues($withTrimmingValues);
         return $this;
     }
 
-    /**
-     * @param string $enclosure
-     * @return $this
-     */
-    public function enclosure($enclosure)
+    public function enclosure(string $enclosure): self
     {
         $this->csvParser->enclosure($enclosure);
         return $this;
     }
 
-    /**
-     * @param string $escapeChar
-     * @return $this
-     */
-    public function escapeChar($escapeChar)
+    public function escapeChar(string $escapeChar): self
     {
         $this->csvParser->escapeChar($escapeChar);
         return $this;
     }
 
-    /**
-     * @param bool $calculateTotalRowsNumBeforeProcessing
-     * @return $this
-     */
-    public function calculateTotalRowsNumBeforeProcessing($calculateTotalRowsNumBeforeProcessing)
+    public function calculateTotalRowsNumBeforeProcessing(bool $calculateTotalRowsNumBeforeProcessing): self
     {
         $this->csvParser->calculateTotalRowsNumBeforeProcessing($calculateTotalRowsNumBeforeProcessing);
         return $this;
     }
 
-    /**
-     * @param bool $withHeader
-     * @return $this
-     */
-    public function withHeader($withHeader)
+    public function withHeader(bool $withHeader): self
     {
         $this->csvParser->withHeader($withHeader);
         return $this;
     }
 
-    /**
-     * @param int $rowsInChunkCount
-     * @return $this
-     */
-    public function chunkSize($rowsInChunkCount)
+    public function chunkSize(int $rowsInChunkCount): self
     {
         $this->csvParser->chunkSize($rowsInChunkCount);
         return $this;
@@ -167,7 +119,7 @@ class Csv extends SubjectAbstract implements CsvParserInterface, SubjectForModul
      * @param string $moduleName
      * @return SubjectAbstract
      */
-    public function forModule($moduleName)
+    public function forModule(string $moduleName): self
     {
         $this->moduleName = $moduleName;
         return $this;

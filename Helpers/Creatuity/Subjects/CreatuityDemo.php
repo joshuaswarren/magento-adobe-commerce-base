@@ -12,69 +12,13 @@ use Magento\Store\Model\ScopeInterface;
 
 /**
  * @license https://warrenappliedlabs.com/license
- * @copyright Copyright (c) 2008-2018 Joshua Warren (https://warrenappliedlabs.com)
+ * @copyright Copyright (c) 2008-* Joshua Warren (https://warrenappliedlabs.com)
  */
 final class CreatuityDemo extends SubjectAbstract
 {
     public function __construct(Creatuity $creatuity)
     {
         throw new \Exception('"Demo" subject is only for code presentation. Execution is forbidden');
-    }
-
-    public function demoCatalog()
-    {
-        $this->demoCatalogProducts();
-        $this->demoCatalogCategories();
-
-    }
-
-    protected function demoCatalogProducts(): void
-    {
-        // we're using Magento products importer tweaked a bit for our needs
-        // see dev/creatuity/project/data/import/catalog_products/*.csv
-        $this->creatuity()->catalog()->importProducts('relative/path/to/file/with/products.csv');
-    }
-
-    protected function demoCatalogCategories(): void
-    {
-        // this fits better for small categories tree
-        // see dev/creatuity/project/data/import/catalog_categories/tree_json.main.json
-        $this->creatuity()->catalog()->importCategories('relative/path/to/file/with/categories.json',
-            'tree_json');
-
-        // this one fits better for bigger categories tree
-        // tree structure is built out of fully-qualified paths
-        // see dev/creatuity/project/data/import/catalog_categories/list_json.main.json
-        $this->creatuity()->catalog()->importCategories('relative/path/to/file/with/categories.json',
-            'list_json');
-
-        // this one also fits better for bigger categories tree
-        // tree structure is built out of 'this' <-> 'parent' relation keys
-        // see dev/creatuity/project/data/import/catalog_categories/linked_list_json.main.json
-        $this->creatuity()->catalog()->importCategories('relative/path/to/file/with/categories.json',
-            'linked_list_json');
-
-        // You can also setup categories programmatically.
-        // Below a few examples together with their file equivalents
-        $this->creatuity()->catalog()->setupExampleCategories(InstallSimpleTreeExample::class);
-        $this->creatuity()->catalog()->importCategories(
-            'dev/creatuity/project/data/import/examples/catalog_categories/install_simple_tree.json',
-            'linked_list');
-
-        $this->creatuity()->catalog()->setupExampleCategories(InstallTreeWithCustomRootCategoriesExample::class);
-        $this->creatuity()->catalog()->importCategories(
-            'dev/creatuity/project/data/import/examples/catalog_categories/install_tree_with_custom_root_categories.json',
-            'linked_list');
-
-        $this->creatuity()->catalog()->setupExampleCategories(SimpleCategoriesModificationExample::class);
-        $this->creatuity()->catalog()->importCategories(
-            'dev/creatuity/project/data/import/examples/catalog_categories/install_tree_with_custom_root_categories.json',
-            'linked_list');
-
-        $this->creatuity()->catalog()->setupExampleCategories(MultistoreExample::class);
-        $this->creatuity()->catalog()->importCategories(
-            'dev/creatuity/project/data/import/catalog_categories/tree_json.multistore.json',
-            'tree_json');
     }
 
     public function demoCms()

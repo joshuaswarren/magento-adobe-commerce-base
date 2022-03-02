@@ -148,7 +148,7 @@ abstract class AbstractUpgradeSchemaDataImpl extends AbstractInstallUpgradeSchem
         }
     }
 
-    public function handleReportEvent($name, array $args)
+    public function handleReportEvent(string $name, array $args): void
     {
         $this->somethingWasPrintedToTheReport = true;
     }

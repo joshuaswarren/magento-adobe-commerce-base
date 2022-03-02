@@ -1,4 +1,5 @@
 <?php
+
 namespace Creatuity\Base\CommandLine\Tools;
 
 use Creatuity\Base\CommandLine\AbstractCommand;
@@ -6,39 +7,25 @@ use Creatuity\Base\Setup\Abstracts\Files\UpgradeFilesInstaller;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-
 /**
- * @package waltwo
  * @license https://warrenappliedlabs.com/license
- * @copyright Copyright (c) 2008-2017 Joshua Warren (https://warrenappliedlabs.com)
+ * @copyright Copyright (c) 2008-* Joshua Warren (https://warrenappliedlabs.com)
  */
 class FilesInstallerCommand extends AbstractCommand
 {
-    /**
-     * @var string
-     */
-    protected $name = 'creatuity:tools:install-files';
+    protected string $name = 'creatuity:tools:install-files';
+    protected string $description = 'Installs media files from modules to project root folder. Purpose of this technique is to avoid collisions with 3rd party development teams';
 
-    /**
-     * @var string
-     */
-    protected $description = 'Installs media files from modules to project root folder. Purpose of this technique is to avoid collisions with 3rd party development teams';
-
-    /**
-     * @var UpgradeFilesInstaller
-     */
-    protected $baseSetup;
+    private UpgradeFilesInstaller $baseSetup;
 
     public function __construct(UpgradeFilesInstaller $baseSetup)
     {
         parent::__construct();
-
         $this->baseSetup = $baseSetup;
     }
 
-    protected function runCommand(InputInterface $input, OutputInterface $output)
+    protected function runCommand(InputInterface $input, OutputInterface $output): void
     {
         $this->baseSetup->upgradeFiles();
     }
-
 }

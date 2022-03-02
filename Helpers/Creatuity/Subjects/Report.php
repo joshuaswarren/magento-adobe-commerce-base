@@ -9,39 +9,20 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * @license https://warrenappliedlabs.com/license
- * @copyright Copyright (c) 2008-2018 Joshua Warren (https://warrenappliedlabs.com)
+ * @copyright Copyright (c) 2008-* Joshua Warren (https://warrenappliedlabs.com)
  */
 class Report extends SubjectAbstract
 {
-    /**
-     * @var Creatuity
-     */
-    protected $helper;
-
-    /**
-     * @var int
-     */
-    protected $nextOutputNeedsNewlines = 0;
-
-    /**
-     * @var bool
-     */
-    protected $printedAtLeastOnce = false;
-
-    /**
-     * @var string
-     */
-    protected $lastThing;
+    private int $nextOutputNeedsNewlines = 0;
+    private bool $printedAtLeastOnce = false;
+    private string $lastThing;
+    private OutputInterface $output;
+    private LoggerInterface $logger;
 
     /**
      * @var ReportObserverInterface[]
      */
-    protected $observers = [];
-
-    /**
-     * @var OutputInterface
-     */
-    protected $output;
+    private array $observers = [];
 
     public function __construct(OutputInterface $output, LoggerInterface $logger, Creatuity $creatuity)
     {
@@ -50,30 +31,27 @@ class Report extends SubjectAbstract
         $this->output = $output;
     }
 
-    /**
-     * @return OutputInterface
-     */
-    public function output()
+    public function output(): OutputInterface
     {
         return $this->output;
     }
 
-    public function ensureNextOutputWillBeSeparated($numOfLines = 1)
+    public function ensureNextOutputWillBeSeparated(int $numOfLines = 1): void
     {
         $this->nextOutputNeedsNewlines = $numOfLines;
     }
 
-    public function registerObserver(ReportObserverInterface $observer)
+    public function registerObserver(ReportObserverInterface $observer): void
     {
         $this->observers[spl_object_hash($observer)] = $observer;
     }
 
-    public function unregisterObserver(ReportObserverInterface $observer)
+    public function unregisterObserver(ReportObserverInterface $observer): void
     {
         unset($this->observers[spl_object_hash($observer)]);
     }
 
-    public function printProgressIndicator()
+    public function printProgressIndicator(): void
     {
         $this->printCreatuityHeader();
         $this->output->write('.');
@@ -81,7 +59,7 @@ class Report extends SubjectAbstract
         $this->lastThing = 'progress';
     }
 
-    public function printMessage($txt)
+    public function printMessage(string $txt): void
     {
         $this->newlineIfNeeded();
         $this->printCreatuityHeader();
@@ -92,7 +70,7 @@ class Report extends SubjectAbstract
         ]);
     }
 
-    public function printSuccess($txt)
+    public function printSuccess(string $txt): void
     {
         $this->newlineIfNeeded();
         $this->printCreatuityHeader();
@@ -103,7 +81,7 @@ class Report extends SubjectAbstract
         ]);
     }
 
-    public function printWarning($txt)
+    public function printWarning(string $txt): void
     {
         $this->newlineIfNeeded();
         $this->printCreatuityHeader();
@@ -114,7 +92,7 @@ class Report extends SubjectAbstract
         ]);
     }
 
-    public function printError($txt, \Exception $e = null)
+    public function printError(string $txt, \Exception $e = null): void
     {
         $this->newlineIfNeeded();
         $this->printCreatuityHeader();
@@ -132,7 +110,7 @@ class Report extends SubjectAbstract
         ]);
     }
 
-    public function printLine($char = '-', $doNotStackLines = true)
+    public function printLine(string $char = '-', bool $doNotStackLines = true): void
     {
         if ($doNotStackLines && $this->lastThing == 'line') {
             return;
@@ -150,7 +128,7 @@ class Report extends SubjectAbstract
         ]);
     }
 
-    public function printEmptySeparator($numOf = 1)
+    public function printEmptySeparator(int $numOf = 1): void
     {
         for ($i = 0; $i < $numOf; ++$i) {
             $this->output->writeln("");
@@ -161,7 +139,7 @@ class Report extends SubjectAbstract
         ]);
     }
 
-    protected function printCreatuityHeader()
+    private function printCreatuityHeader(): void
     {
         if ($this->printedAtLeastOnce) {
             return;
@@ -176,7 +154,7 @@ class Report extends SubjectAbstract
         $this->lastThing = 'creatuity_header';
     }
 
-    protected function newlineIfNeeded()
+    private function newlineIfNeeded(): void
     {
         if (!$this->nextOutputNeedsNewlines) {
             return;
@@ -193,7 +171,7 @@ class Report extends SubjectAbstract
         $this->lastThing = 'needed_newline';
     }
 
-    protected function callObservers($eventName, array $args = [])
+    private function callObservers(string $eventName, array $args = []): void
     {
         foreach($this->observers as $observer) {
             $observer->handleReportEvent($eventName, $args);

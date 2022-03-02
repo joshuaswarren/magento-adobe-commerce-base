@@ -7,22 +7,13 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * @package m2newbuild
  * @license https://warrenappliedlabs.com/license
- * @copyright Copyright (c) 2008-2016 Joshua Warren (https://warrenappliedlabs.com)
+ * @copyright Copyright (c) 2008-* Joshua Warren (https://warrenappliedlabs.com)
  */
 abstract class AbstractCommand extends Command
 {
-    /**
-     * @var string
-     */
-    protected $description = '';
-
-    /**
-     * @var string
-     */
-    protected $name = '';
-
+    protected string $description = '';
+    protected string $name = '';
 
     public function __construct()
     {
@@ -38,11 +29,10 @@ abstract class AbstractCommand extends Command
         parent::__construct($this->name);
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
         $this->runCommand($input, $output);
     }
 
-    abstract protected function runCommand(InputInterface $input, OutputInterface $output);
-
+    abstract protected function runCommand(InputInterface $input, OutputInterface $output): void;
 }

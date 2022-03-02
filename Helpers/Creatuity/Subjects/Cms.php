@@ -16,7 +16,7 @@ use Magento\Framework\Exception\NoSuchEntityException;
 
 /**
  * @license https://warrenappliedlabs.com/license
- * @copyright Copyright (c) 2008-2021 Joshua Warren (https://warrenappliedlabs.com)
+ * @copyright Copyright (c) 2008-* Joshua Warren (https://warrenappliedlabs.com)
  */
 class Cms extends SubjectAbstract implements SubjectForModuleInterface
 {
