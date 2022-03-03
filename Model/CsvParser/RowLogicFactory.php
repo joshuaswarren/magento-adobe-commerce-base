@@ -7,30 +7,21 @@ use Creatuity\Base\Model\CsvParser\Logic\Row\RowClosureLogic;
 
 /**
  * @license https://warrenappliedlabs.com/license
- * @copyright Copyright (c) 2008-2018 Joshua Warren (https://warrenappliedlabs.com)
+ * @copyright Copyright (c) 2008-* Joshua Warren (https://warrenappliedlabs.com)
  */
 class RowLogicFactory extends LogicAbstractFactory
 {
-    /**
-     * @return string
-     */
-    protected function emptyLogicClassName()
+    protected function emptyLogicClassName(): string
     {
         return EmptyRowLogic::class;
     }
 
-    /**
-     * @return string
-     */
-    protected function closureLogicClassName()
+    protected function closureLogicClassName(): string
     {
         return RowClosureLogic::class;
     }
 
-    /**
-     * @return string
-     */
-    protected function logicInterfaceName()
+    protected function logicInterfaceName(): string
     {
         return LogicInterface::class;
     }

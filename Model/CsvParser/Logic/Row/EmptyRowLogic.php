@@ -7,7 +7,7 @@ use Creatuity\Base\Model\CsvParser\UtilityInterface;
 
 /**
  * @license https://warrenappliedlabs.com/license
- * @copyright Copyright (c) 2008-2018 Joshua Warren (https://warrenappliedlabs.com)
+ * @copyright Copyright (c) 2008-* Joshua Warren (https://warrenappliedlabs.com)
  */
 class EmptyRowLogic implements LogicInterface
 {

@@ -2,11 +2,14 @@
 
 namespace Creatuity\Base\Model\Lock;
 
+/**
+ * @license https://warrenappliedlabs.com/license
+ * @copyright Copyright (c) 2008-* Joshua Warren (https://warrenappliedlabs.com)
+ */
 class Factory
 {
     /** @var LockFactory */
-    protected $lockFactory;
-
+    private LockFactory $lockFactory;
 
 	public function __construct(
 		LockFactory $lockFactory
@@ -14,11 +17,7 @@ class Factory
 		$this->lockFactory = $lockFactory;
 	}
 
-    /**
-     * @param $name
-     * @return Lock
-     */
-    public function create($name)
+    public function create(string $name): Lock
     {
         return $this->lockFactory->create(['name' => $name]);
     }

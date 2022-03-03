@@ -2,12 +2,13 @@
 
 namespace Creatuity\Base\Model\CsvParser;
 
+use Closure;
+use Exception;
 use Magento\Framework\ObjectManagerInterface;
 
 abstract class LogicAbstractFactory
 {
-    /** @var ObjectManagerInterface */
-    protected $objectManager;
+    private ObjectManagerInterface $objectManager;
 
     public function __construct(ObjectManagerInterface $objectManager)
     {
@@ -15,26 +16,26 @@ abstract class LogicAbstractFactory
     }
 
     /**
-     * @param \Closure|string $type
+     * @param Closure|string $type
      *
      * @return ChunkLogicInterface
      * @throws ParserException
      */
-    public function create($type = null)
+    public function create($type = null): ChunkLogicInterface
     {
         $logic = null;
-        if ( is_null($type) ) {
+        if (is_null($type)) {
             $type = $this->emptyLogicClassName();
         }
 
-        if (is_object($type) && !$type instanceof \Closure) {
+        if (is_object($type) && !$type instanceof Closure) {
             $logic = $type;
         } else {
             try {
                 $logic = is_callable($type)
                     ? $this->objectManager->create($this->closureLogicClassName(), ['closure' => $type])
                     : $this->objectManager->create($type);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 throw new ParserException('No csv logic model found', $e->getCode(), $e);
             }
         }
@@ -47,18 +48,9 @@ abstract class LogicAbstractFactory
         return $logic;
     }
 
-    /**
-     * @return string
-     */
-    abstract protected function emptyLogicClassName();
+    abstract protected function emptyLogicClassName(): string;
 
-    /**
-     * @return string
-     */
-    abstract protected function closureLogicClassName();
+    abstract protected function closureLogicClassName(): string;
 
-    /**
-     * @return string
-     */
-    abstract protected function logicInterfaceName();
+    abstract protected function logicInterfaceName(): string;
 }
