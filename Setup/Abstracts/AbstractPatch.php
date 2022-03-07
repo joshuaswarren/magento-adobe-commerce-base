@@ -3,51 +3,33 @@
 namespace Creatuity\Base\Setup\Abstracts;
 
 use Creatuity\Base\Helpers\Creatuity;
-use Creatuity\Base\Helpers\Creatuity\Subjects\CreatuityDemo;
 use Creatuity\Base\Helpers\Creatuity\Subjects\Report\ReportObserverInterface;
 use Creatuity\Base\Setup\Abstracts\Patch\PatchInterface;
 use Creatuity\Base\Setup\Tools\SelfExplainTester;
-use Creatuity\Base\Setup\Type\Catalog;
-use Creatuity\Base\Setup\TypeFactory;
-use Creatuity\Base\Setup\TypeInterface;
+use Exception;
 
 /**
  * @license https://warrenappliedlabs.com/license
- * @copyright Copyright (c) 2008-2018 Joshua Warren (https://warrenappliedlabs.com)
+ * @copyright Copyright (c) 2008-* Joshua Warren (https://warrenappliedlabs.com)
+ *
+ * @deprecated Use core DataPatchInterface, include desired pieces via constructor
  */
-abstract class AbstractPatch implements PatchInterface, ReportObserverInterface, TypeInterface
+abstract class AbstractPatch implements PatchInterface, ReportObserverInterface
 {
-    /**
-     * @var Creatuity
-     */
-    private $creatuity;
-
-    /**
-     * @var SelfExplainTester
-     */
-    private $selfExplainTester;
-
-    /**
-     * @var bool
-     */
-    private $isSomethingPrinted;
-
-    /**
-     * @var TypeFactory
-     */
-    private $typeFactory;
+    private Creatuity $creatuity;
+    private SelfExplainTester $selfExplainTester;
+    private bool $isSomethingPrinted;
 
     public function __construct(AbstractPatchContext $patchContext)
     {
         $this->creatuity = $patchContext->getCreatuity()->forModule($patchContext->getModuleNameResolver()->byObject($this));
         $this->selfExplainTester = $patchContext->getSelfExplainTester();
-        $this->typeFactory = $patchContext->getTypeFactory();
     }
 
     /**
-    * @return $this
-    */
-    final public function apply()
+     * @throws Exception
+     */
+    final public function apply(): AbstractPatch
     {
         try {
             $this->creatuity()->report()->registerObserver($this);
@@ -62,7 +44,7 @@ abstract class AbstractPatch implements PatchInterface, ReportObserverInterface,
             }
 
             $this->handlePatchSuccess();
-        }  catch ( \Exception $e ) {
+        }  catch ( Exception $e ) {
             $this->handlePatchFailure($e);
             throw $e;
         } finally {
@@ -72,14 +54,13 @@ abstract class AbstractPatch implements PatchInterface, ReportObserverInterface,
                 $this->selfExplainTester->ensureIsSelfExplaining($this, 'applyPatch');
             }
         }
+
+        return $this;
     }
 
-    /**
-     * @return $this
-     */
-    abstract protected function applyPatch();
+    abstract protected function applyPatch(): AbstractPatch;
 
-    private function handlePatchPreparation()
+    private function handlePatchPreparation(): void
     {
         $this->creatuity()->report()->printEmptySeparator(1);
         $this->creatuity()->report()->printLine('=');
@@ -87,7 +68,7 @@ abstract class AbstractPatch implements PatchInterface, ReportObserverInterface,
         $this->creatuity()->report()->printLine('-');
     }
 
-    private function handlePatchSuccess()
+    private function handlePatchSuccess(): void
     {
         $this->creatuity()->report()->printLine('-');
         $this->creatuity()->report()->printSuccess(sprintf("%s - Succeeded.", get_class($this)));
@@ -95,7 +76,7 @@ abstract class AbstractPatch implements PatchInterface, ReportObserverInterface,
         $this->creatuity()->report()->printEmptySeparator(2);
     }
 
-    private function handlePatchFailure(\Exception $e)
+    private function handlePatchFailure(Exception $e): void
     {
         $this->creatuity()->report()->printLine('-');
         $this->creatuity()->report()->printError(sprintf("%s - Failed:\n%s", get_class($this), $e->getMessage()), $e);
@@ -110,41 +91,12 @@ abstract class AbstractPatch implements PatchInterface, ReportObserverInterface,
         $this->isSomethingPrinted = true;
     }
 
-    /**
-     * @return CreatuityDemo
-     */
-    public function creatuityDemo()
-    {
-        return $this->creatuity()->demo();
-    }
-
-    /**
-     * @return Creatuity
-     */
-    public function creatuity()
+    public function creatuity(): Creatuity
     {
         return $this->creatuity;
     }
 
-    /**
-     * @return Catalog
-     */
-    protected function eavCatalog()
-    {
-        return $this->typeFactory->create('catalog', $this);
-    }
-    /**
-     * @return Customer
-     */
-    protected function eavCustomer()
-    {
-        return $this->typeFactory->create('customer', $this);
-    }
-
-    /**
-     * @return array
-     */
-    public function getAliases()
+    public function getAliases(): array
     {
         return [];
     }

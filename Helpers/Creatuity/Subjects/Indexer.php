@@ -36,6 +36,8 @@ class Indexer extends SubjectAbstract
         $this->indexer->reindexAll();
 
         $this->creatuity()->report()->printMessage("Reindexing done.");
+
+        return $this;
     }
 
     public function reindexAllInvalid(): self
@@ -45,6 +47,8 @@ class Indexer extends SubjectAbstract
         $this->indexer->reindexAllInvalid();
 
         $this->creatuity()->report()->printMessage("Reindexing done.");
+
+        return $this;
     }
 
     public function reindexDesignConfigGrid(): self
@@ -127,6 +131,7 @@ class Indexer extends SubjectAbstract
 
             $this->creatuity()->report()->printSuccess(sprintf('Reindex of %s done.', $index->getId()));
         }
+
         return $this;
     }
 
@@ -142,6 +147,7 @@ class Indexer extends SubjectAbstract
             }
 
         }
+
         return $this->indexes;
     }
 }

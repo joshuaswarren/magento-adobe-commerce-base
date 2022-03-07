@@ -22,12 +22,13 @@ class GridSynchronizer
         Grid $shipmentGridUpdater,
         Grid $creditmemoGridUpdater,
         LoggerInterface $logger
-    )
-    {
+    ) {
         $this->gridUpdaters['order'] = $orderGridUpdater;
         $this->gridUpdaters['invoice'] = $invoiceGridUpdater;
         $this->gridUpdaters['shipment'] = $shipmentGridUpdater;
         $this->gridUpdaters['creditmemo'] = $creditmemoGridUpdater;
+
+        $this->logger = $logger;
     }
 
 

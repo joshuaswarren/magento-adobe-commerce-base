@@ -4,40 +4,28 @@ namespace Creatuity\Base\Setup\Abstracts\Files\Installers;
 
 use Creatuity\Base\Helpers\Creatuity;
 use Creatuity\Base\Helpers\Creatuity\Subjects\ResourcesHelperException;
+use Magento\Framework\Exception\FileSystemException;
 
 /**
- * @package base2
  * @license https://warrenappliedlabs.com/license
- * @copyright Copyright (c) 2008-2016 Joshua Warren (https://warrenappliedlabs.com)
+ * @copyright Copyright (c) 2008-* Joshua Warren (https://warrenappliedlabs.com)
  */
 class FilesInstaller
 {
-    /**
-     * @var string
-     */
-    protected $filesDir = 'data/files';
+    private string $filesDir = 'data/files';
 
     /**
-     * @var Creatuity
-     *
      * @deprecated use $this->creatuity() method
      */
-    protected $creatuity;
+    private Creatuity $creatuity;
 
-    /**
-     * @var string
-     */
-    protected $className;
+    private string $className;
 
-    /**
-     * @param string $className
-     */
-    public function __construct(Creatuity $creatuity, $className)
+    public function __construct(Creatuity $creatuity, string $className)
     {
         $this->creatuity = $creatuity;
         $this->className = $className;
     }
-
 
     /**
      * Example:
@@ -52,7 +40,7 @@ class FilesInstaller
      *   ]);
      *
      */
-    public function installByDirs(array $dirsWithFiles)
+    public function installByDirs(array $dirsWithFiles): bool
     {
         $isOk = true;
 
@@ -78,7 +66,7 @@ class FilesInstaller
      *   ]);
      *
      */
-    public function installByFiles(array $filesToDirs)
+    public function installByFiles(array $filesToDirs): bool
     {
         $isOk = true;
 
@@ -96,7 +84,7 @@ class FilesInstaller
         return $isOk;
     }
 
-    protected function installModuleFile($srPathInModule, $dstPathInProject)
+    private function installModuleFile($srPathInModule, $dstPathInProject): void
     {
         $projectDirReader = $this->creatuity()->resources()->projectDirReader();
 
@@ -109,7 +97,7 @@ class FilesInstaller
         $this->installFile($srcPathInProject, $dstPathInProject);
     }
 
-    protected function installModuleDir($srcPathInModule, $dstDirInProject)
+    private function installModuleDir($srcPathInModule, $dstDirInProject): void
     {
         $srcPathInProject = $this->determineSrcPath($srcPathInModule);
 
@@ -118,7 +106,11 @@ class FilesInstaller
         $this->installFile($srcPathInProject, $dstPathInProject);
     }
 
-    protected function installFile($srcPath, $dstPathInProject)
+    /**
+     * @throws ResourcesHelperException
+     * @throws FileSystemException
+     */
+    private function installFile($srcPath, $dstPathInProject): void
     {
         $projectDirWriter = $this->creatuity()->resources()->projectDirWriter();
 
@@ -144,19 +136,19 @@ class FilesInstaller
         $this->creatuity()->report()->printSuccess("Copied '{$srcPathTxt}' to '{$dstPathTxt}' ");
     }
 
-    public function removeFile($file, $allowDirsRemoval = false)
+    public function removeFile($file, $allowDirsRemoval = false): void
     {
         $this->removeFiles([$file], $allowDirsRemoval);
     }
 
-    public function removeFiles($files, $allowDirsRemoval = false)
+    public function removeFiles($files, $allowDirsRemoval = false): bool
     {
         $isOk = true;
 
         $projectDir = $this->creatuity()->resources()->projectDirWriter();
 
         foreach ($files as $file) {
-            try{
+            try {
                 if (!$projectDir->isExist($file)) {
                     $this->creatuity()->report()->printWarning("Cannot find '{$projectDir->getAbsolutePath($file)}'. Skipping.");
                     continue;
@@ -168,7 +160,7 @@ class FilesInstaller
 
                 $projectDir->delete($file);
                 $this->creatuity()->report()->printSuccess("Removed '${file}'");
-            }catch (\Exception $e) {
+            } catch (\Exception $e) {
                 $isOk = false;
                 $this->creatuity()->report()->printError("Cannot remove '$file': " . $e->getMessage(), $e);
             }
@@ -177,7 +169,7 @@ class FilesInstaller
         return $isOk;
     }
 
-    protected function determineSrcPath($srcPathInModule)
+    private function determineSrcPath($srcPathInModule): string
     {
         try{
             return $this->creatuity()->resources()->fileRelPath(
@@ -187,10 +179,7 @@ class FilesInstaller
         }
     }
 
-    /**
-     * @return Creatuity
-     */
-    protected function creatuity()
+    private function creatuity(): Creatuity
     {
         return $this->creatuity;
     }

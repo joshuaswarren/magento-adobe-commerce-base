@@ -3,10 +3,6 @@
 namespace Creatuity\Base\Helpers\Creatuity\Subjects;
 
 use Creatuity\Base\Helpers\Creatuity;
-use Creatuity\Base\Model\Catalog\CategoriesModifier\Examples\InstallSimpleTreeExample;
-use Creatuity\Base\Model\Catalog\CategoriesModifier\Examples\InstallTreeWithCustomRootCategoriesExample;
-use Creatuity\Base\Model\Catalog\CategoriesModifier\Examples\MultistoreExample;
-use Creatuity\Base\Model\Catalog\CategoriesModifier\Examples\SimpleCategoriesModificationExample;
 use Creatuity\Base\Model\CsvParser\UtilityInterface;
 use Magento\Store\Model\ScopeInterface;
 
