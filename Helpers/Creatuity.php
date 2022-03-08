@@ -19,11 +19,6 @@ use Creatuity\Base\Helpers\Creatuity\Subjects\Report;
 use Creatuity\Base\Helpers\Creatuity\Subjects\Resources;
 use Creatuity\Base\Helpers\Creatuity\Subjects\SubjectAbstract;
 use Creatuity\Base\Model\CsvParser\CsvParserInterface;
-use Magento\Framework\App\ResourceConnection;
-use Magento\Framework\App\Config\MutableScopeConfigInterface;
-use Magento\Framework\App\State;
-use Magento\Framework\Registry;
-use Magento\Indexer\Model\Processor;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -34,20 +29,18 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class Creatuity
 {
+    private string $forceModuleName = '';
+
     private SubjectsFactory $subjectsFactory;
     private OutputInterface $output;
-    private string $scope;
 
     public function __construct(
         SubjectsFactory $subjectsFactory,
-        ResourceConnection $connectionsPool, MutableScopeConfigInterface $scopeConfig, State $magentoArea, Registry $registry, Processor $indexer,
         OutputInterface $defaultOutput,
-        $scope = '',
         OutputInterface $output = null
     ) {
         $this->subjectsFactory = $subjectsFactory;
         $this->output = $output ? $output : $defaultOutput;
-        $this->scope = $scope;
     }
 
     public function cms(string $forModule = ''): Cms
@@ -124,8 +117,18 @@ class Creatuity
         return $this->obtainSubject('processing');
     }
 
+    public function forModule(string $moduleName): self
+    {
+        $this->forceModuleName = $moduleName;
+        return $this;
+    }
+
     private function obtainModuleSubject(string $subjectName, string $forModule = ''): SubjectAbstract
     {
+        if (!empty($this->forceModuleName)) {
+            $forModule = $this->forceModuleName;
+        }
+
         if ($forModule) {
             /** @var SubjectForModuleInterface $subject */
             $subject = $this->obtainSubject($subjectName, true);
@@ -138,6 +141,6 @@ class Creatuity
 
     private function obtainSubject(string $subjectName, bool $isNew = false, array $arguments = []): SubjectAbstract
     {
-        return $this->subjectsFactory->obtain($subjectName, $this, $this->scope, $isNew, $arguments);
+        return $this->subjectsFactory->obtain($subjectName, $this, $isNew, $arguments);
     }
 }

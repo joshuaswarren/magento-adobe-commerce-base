@@ -1,0 +1,6 @@
+{
+  "title" : "Test page",
+  "is_active" : true,
+  "identifier" : "test-page",
+  "content_heading": ""
+}

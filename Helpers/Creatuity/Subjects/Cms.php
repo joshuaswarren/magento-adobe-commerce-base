@@ -279,19 +279,15 @@ class Cms extends SubjectAbstract implements SubjectForModuleInterface
 
     protected function pagePathPattern(): string
     {
-        return '';
+        return 'data' . DIRECTORY_SEPARATOR . 'cms' . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR;
     }
 
     protected function blockPathPattern(): string
     {
-        return '';
+        return 'data' . DIRECTORY_SEPARATOR . 'cms' . DIRECTORY_SEPARATOR . 'blocks' . DIRECTORY_SEPARATOR;
     }
 
-    /**
-     * @param string $moduleName
-     * @return $this
-     */
-    public function forModule($moduleName)
+    public function forModule(string $moduleName): self
     {
         $this->moduleName = $moduleName;
         return $this;

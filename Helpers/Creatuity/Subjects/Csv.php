@@ -33,7 +33,7 @@ class Csv extends SubjectAbstract implements CsvParserInterface, SubjectForModul
 
     protected function csvFilesPath(): string
     {
-        return '';
+        return 'data' . DIRECTORY_SEPARATOR . 'csv';
     }
 
     public function run(): ?array
@@ -115,10 +115,6 @@ class Csv extends SubjectAbstract implements CsvParserInterface, SubjectForModul
         return $this;
     }
 
-    /**
-     * @param string $moduleName
-     * @return SubjectAbstract
-     */
     public function forModule(string $moduleName): self
     {
         $this->moduleName = $moduleName;
