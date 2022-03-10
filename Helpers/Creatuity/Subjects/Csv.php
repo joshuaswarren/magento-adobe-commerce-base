@@ -23,11 +23,18 @@ class Csv extends SubjectAbstract implements CsvParserInterface, SubjectForModul
         $this->csvParser = $csvParserInterfaceFactory->create();
     }
 
+    /**
+     * @throws ResourcesHelperException
+     * @throws Exception\ModuleNotSetException
+     */
     public function parse(string $fileName): self
     {
+        $this->ensureModuleIsSet();
+
         $this->csvParser->parse(
             $this->creatuity()->resources($this->moduleName)->fileAbsPath($this->csvFilesPath() . DIRECTORY_SEPARATOR . $fileName)
         );
+
         return $this;
     }
 
@@ -119,5 +126,12 @@ class Csv extends SubjectAbstract implements CsvParserInterface, SubjectForModul
     {
         $this->moduleName = $moduleName;
         return $this;
+    }
+
+    public function ensureModuleIsSet(): void
+    {
+        if (empty($this->moduleName)) {
+            throw new Creatuity\Subjects\Exception\ModuleNotSetException();
+        }
     }
 }

@@ -20,12 +20,16 @@ class TestPatch implements DataPatchInterface
         $this->reportUtility = $reportUtility;
     }
 
+    /**
+     * @throws Creatuity\Subjects\Exception\ModuleNotSetException
+     */
     public function apply(): self
     {
         $this->reportUtility->printMessage('Creating test deprecated page and block...');
 
-        $this->cmsUtility->blockSave('test-deprecated-block');
-        $this->cmsUtility->pageSave('test-deprecated-page');
+        $this->cmsUtility->forModule('Creatuity_Base');
+        $this->cmsUtility->blockSave('test-block');
+        $this->cmsUtility->pageSave('test-page');
 
         return $this;
     }

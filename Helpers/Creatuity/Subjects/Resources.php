@@ -3,6 +3,7 @@
 namespace Creatuity\Base\Helpers\Creatuity\Subjects;
 
 use Creatuity\Base\Helpers\Creatuity;
+use Creatuity\Base\Helpers\Creatuity\Subjects\Exception\ModuleNotSetException;
 use Exception;
 use Generator;
 use Magento\Framework\Exception\ValidatorException;
@@ -246,6 +247,13 @@ class Resources extends SubjectAbstract implements SubjectForModuleInterface
     {
         $this->moduleName = $moduleName;
         return $this;
+    }
+
+    public function ensureModuleIsSet(): void
+    {
+        if (empty($this->moduleName)) {
+            throw new Creatuity\Subjects\Exception\ModuleNotSetException();
+        }
     }
 }
 
