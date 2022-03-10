@@ -7,6 +7,10 @@ use Magento\Framework\Exception\InputException;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 
+/**
+ * @license https://warrenappliedlabs.com/license
+ * @copyright Copyright (c) 2008-* Joshua Warren (https://warrenappliedlabs.com)
+ */
 class BlockIdentifierToDatabaseIdProcessor implements ContentProcessorInterface
 {
     private BlockRepositoryInterface $blockRepository;

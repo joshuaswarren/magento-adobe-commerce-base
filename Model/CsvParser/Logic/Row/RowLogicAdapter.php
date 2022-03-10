@@ -9,33 +9,27 @@ use Creatuity\Base\Model\CsvParser\UtilityInterface;
 
 /**
  * @license https://warrenappliedlabs.com/license
- * @copyright Copyright (c) 2008-2018 Joshua Warren (https://warrenappliedlabs.com)
+ * @copyright Copyright (c) 2008-* Joshua Warren (https://warrenappliedlabs.com)
  */
 class RowLogicAdapter implements ChunkLogicInterface
 {
-    /** @var LogicInterface */
-    protected $rowLogic;
+    private LogicInterface $rowLogic;
+    private Parser $parser;
 
-    /** @var Parser */
-    protected $parser;
-
-    public function __construct(LogicInterface $rowLogic, Parser $parser)
-    {
+    public function __construct(
+        LogicInterface $rowLogic,
+        Parser $parser
+    ) {
         $this->rowLogic = $rowLogic;
         $this->parser = $parser;
     }
 
-
-    public function beforeProcess(UtilityInterface $utility)
+    public function beforeProcess(UtilityInterface $utility): void
     {
         $this->rowLogic->beforeProcess($utility);
     }
 
-    /**
-     * @param array[] $chunkRows
-     * @return mixed
-     */
-    public function processChunk(array $chunkRows, UtilityInterface $utility)
+    public function processChunk(array $chunkRows, UtilityInterface $utility): void
     {
         $isLast = $this->parser->isLast();
         if ( $isLast ) {
@@ -59,7 +53,7 @@ class RowLogicAdapter implements ChunkLogicInterface
         }
     }
 
-    public function afterProcess(UtilityInterface $utility)
+    public function afterProcess(UtilityInterface $utility): void
     {
         $this->rowLogic->afterProcess($utility);
     }

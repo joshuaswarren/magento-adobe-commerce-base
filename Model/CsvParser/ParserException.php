@@ -2,12 +2,12 @@
 
 namespace Creatuity\Base\Model\CsvParser;
 
+use Exception;
+
 /**
- * @category Creatuity
- * @package intcb
- * @copyright Copyright (c) 2008-2017 Joshua Warren (https://warrenappliedlabs.com)
  * @license https://warrenappliedlabs.com/license
+ * @copyright Copyright (c) 2008-* Joshua Warren (https://warrenappliedlabs.com)
  */
-class ParserException extends \Exception
+class ParserException extends Exception
 {
 }

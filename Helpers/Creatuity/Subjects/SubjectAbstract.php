@@ -2,28 +2,22 @@
 
 namespace Creatuity\Base\Helpers\Creatuity\Subjects;
 
-use Creatuity\Base\Helpers\Creatuity;
+use Creatuity\Base\Helpers\Creatuity as CreatuityHelper;
 
 /**
  * @license https://warrenappliedlabs.com/license
- * @copyright Copyright (c) 2008-2018 Joshua Warren (https://warrenappliedlabs.com)
+ * @copyright Copyright (c) 2008-* Joshua Warren (https://warrenappliedlabs.com)
  */
 abstract class SubjectAbstract
 {
-    /**
-     * @var Creatuity
-     */
-    protected $creatuity;
+    protected CreatuityHelper $creatuity;
 
-    public function __construct(Creatuity $creatuity)
+    public function __construct(CreatuityHelper $creatuity)
     {
         $this->creatuity = $creatuity;
     }
 
-    /**
-     * @return Creatuity
-     */
-    protected function creatuity()
+    protected function creatuity(): CreatuityHelper
     {
         return $this->creatuity;
     }

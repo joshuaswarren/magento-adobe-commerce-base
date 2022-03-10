@@ -3,6 +3,7 @@
 namespace Creatuity\Base\Helpers\Creatuity\Subjects;
 
 use Creatuity\Base\Helpers\Creatuity;
+use Exception;
 use Magento\Framework\App\State;
 use Magento\Framework\Registry;
 use Magento\Framework\App\Config\MutableScopeConfigInterface;
@@ -11,29 +12,14 @@ use Magento\Store\Model\StoreManagerInterface;
 
 /**
  * @license https://warrenappliedlabs.com/license
- * @copyright Copyright (c) 2008-2018 Joshua Warren (https://warrenappliedlabs.com)
+ * @copyright Copyright (c) 2008-* Joshua Warren (https://warrenappliedlabs.com)
  */
 class Emulate extends SubjectAbstract
 {
-    /**
-     * @var State
-     */
-    protected $magentoArea;
-
-    /**
-     * @var Registry
-     */
-    protected $registry;
-
-    /**
-     * @var MutableScopeConfigInterface
-     */
-    protected $config;
-
-    /**
-     * @var StoreManagerInterface
-     */
-    protected $storeManager;
+    private State $magentoArea;
+    private Registry $registry;
+    private MutableScopeConfigInterface $config;
+    private StoreManagerInterface $storeManager;
 
     public function __construct(
         StoreManagerInterface $storeManager,
@@ -49,12 +35,17 @@ class Emulate extends SubjectAbstract
         $this->storeManager = $storeManager;
     }
 
-
+    /**
+     * @throws Exception
+     */
     public function runInFrontendArea(callable $callback)
     {
         return $this->magentoArea->emulateAreaCode('frontend', $callback);
     }
 
+    /**
+     * @throws Exception
+     */
     public function runInSecuredArea(callable $callback)
     {
         $prev = $this->registry->registry('isSecureArea');
@@ -72,6 +63,13 @@ class Emulate extends SubjectAbstract
         }
     }
 
+    /**
+     * @param string|int $storeIdOrCode
+     * @param callable $callback
+     * @param array $params
+     * @return mixed
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
     public function runInStore($storeIdOrCode, callable $callback, array $params = [])
     {
         $currentStore = $this->storeManager->getStore();
@@ -83,15 +81,16 @@ class Emulate extends SubjectAbstract
         } finally {
             $this->storeManager->setCurrentStore($currentStore->getCode());
         }
+
         return $result;
     }
 
-    public function runWithConfig($path, $value, $callback, $scopeType = ScopeInterface::SCOPE_STORE, $scopeCode = null)
+    public function runWithConfig(string $path, $value, callable $callback, string $scopeType = ScopeInterface::SCOPE_STORE, string $scopeCode = null)
     {
         return $this->runWithConfigMany([$path => $value], $callback, $scopeType, $scopeCode);
     }
 
-    public function runWithConfigMany(array $settings, $callback, $scopeType = ScopeInterface::SCOPE_STORE, $scopeCode = null)
+    public function runWithConfigMany(array $settings, callable $callback, string $scopeType = ScopeInterface::SCOPE_STORE, string $scopeCode = null)
     {
         $prev = [];
         foreach (array_keys($settings) as $path) {

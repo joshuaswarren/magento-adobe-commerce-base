@@ -3,67 +3,53 @@
 namespace Creatuity\Base\Observer\Maintenance;
 
 use Creatuity\Base\Observer\AbstractObserver;
-use http\Env\Response;
 use Magento\Framework\App\MaintenanceMode;
 use Magento\Framework\App\Request\Http as RequestHttp;
 use Magento\Framework\App\Response\Http;
 use Magento\Framework\Event\Observer;
 
+/**
+ * @license https://warrenappliedlabs.com/license
+ * @copyright Copyright (c) 2008-* Joshua Warren (https://warrenappliedlabs.com)
+ */
 class MaintenanceAlert extends AbstractObserver
 {
-    /**
-     * @const string
-     */
-    const DISABLE_MAINTENANCE_ALERT_MARKER_NAME = 'cb2_disable_maintenance_info';
+    private const DISABLE_MAINTENANCE_ALERT_MARKER_NAME = 'cb2_disable_maintenance_info';
+    private const DEFAULT_MAINTENANCE_ALERT_MESSAGE = '----- WARNING!!! You are in maintenance mode ----';
 
-    const DEFAULT_MAINTENANCE_ALERT_MESSAGE = '----- WARNING!!! You are in maintenance mode ----';
-
-    /**
-     * @var MaintenanceMode
-     */
-    protected $maintenanceMode;
-
-    /**
-     * @var string
-     */
-    protected $maintenanceAlertMessage;
-
+    private MaintenanceMode $maintenanceMode;
+    private string $maintenanceAlertMessage;
 
     public function __construct(MaintenanceMode $maintenanceMode, $maintenanceAlertMessage = '')
     {
         $this->maintenanceMode = $maintenanceMode;
-        $this->maintenanceAlertMessage = $maintenanceAlertMessage ? $maintenanceAlertMessage : static::DEFAULT_MAINTENANCE_ALERT_MESSAGE;
+        $this->maintenanceAlertMessage = $maintenanceAlertMessage ?: static::DEFAULT_MAINTENANCE_ALERT_MESSAGE;
     }
 
-    public function execute(Observer $observer)
+    public function execute(Observer $observer): void
     {
-        if ($this->isDisplayMaintenanceAlert( $observer->getData('request' ))) {
-            $this->addAlertToPageContent( $observer->getData('response') );
+        if ($this->isDisplayMaintenanceAlert($observer->getData('request'))) {
+            $this->addAlertToPageContent($observer->getData('response'));
         }
     }
 
-    /**
-     * @return bool
-     */
-    protected function isDisplayMaintenanceAlert(RequestHttp $request)
+    private function isDisplayMaintenanceAlert(RequestHttp $request): bool
     {
-        return
-            $this->maintenanceMode->isOn()
-            && !$request->isXmlHttpRequest();
+        return $this->maintenanceMode->isOn() && !$request->isXmlHttpRequest();
     }
 
 
-    protected function addAlertToPageContent(Http $response)
+    private function addAlertToPageContent(Http $response): void
     {
         $replaceData = $this->replaceContent();
 
         $response->setContent(
             str_replace($replaceData['from'], $replaceData['to'], $this->alertRawContent())
             . $response->getContent()
-            );
+        );
     }
 
-    protected function replaceContent()
+    private function replaceContent(): array
     {
         return [
             'from' => [
@@ -75,7 +61,7 @@ class MaintenanceAlert extends AbstractObserver
         ];
     }
 
-    protected function alertRawContent()
+    private function alertRawContent(): string
     {
         return
 <<<RAWCONTENT
@@ -116,16 +102,16 @@ class MaintenanceAlert extends AbstractObserver
     }
     #maintenance-message {
         display: block;
-        position: -webkit-sticky; 
-        position: sticky; 
-        z-index: 10000; 
-        top: 0; 
-        background: red; 
-        padding: 10px; 
-        font-size: 18px; 
-        font-weight: bold; 
-        color: white; 
-        text-align: center; 
+        position: -webkit-sticky;
+        position: sticky;
+        z-index: 10000;
+        top: 0;
+        background: red;
+        padding: 10px;
+        font-size: 18px;
+        font-weight: bold;
+        color: white;
+        text-align: center;
         overflow: hidden;
     }
 

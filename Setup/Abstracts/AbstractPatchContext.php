@@ -3,75 +3,40 @@
 namespace Creatuity\Base\Setup\Abstracts;
 
 use Creatuity\Base\Helpers\Creatuity;
-use Creatuity\Base\Helpers\OurHelperForScripts;
 use Creatuity\Base\Setup\Tools\ModuleNameResolver;
 use Creatuity\Base\Setup\Tools\SelfExplainTester;
-use Creatuity\Base\Setup\TypeFactory;
 
 /**
  * @license https://warrenappliedlabs.com/license
- * @copyright Copyright (c) 2008-2018 Joshua Warren (https://warrenappliedlabs.com)
+ * @copyright Copyright (c) 2008-* Joshua Warren (https://warrenappliedlabs.com)
+ *
+ * @deprecated Use core DataPatchInterface, include desired pieces via constructor
  */
 class AbstractPatchContext
 {
-    /**
-     * @var OurHelperForScripts
-     */
-    protected $creatuity;
+    private Creatuity $creatuity;
+    private SelfExplainTester $selfExplainTester;
+    private ModuleNameResolver $moduleNameResolver;
 
-    /**
-     * @var SelfExplainTester
-     */
-    protected $selfExplainTester;
-
-    /**
-     * @var ModuleNameResolver
-     */
-    protected $moduleNameResolver;
-
-    /**
-     * @var TypeFactory
-     */
-    protected $typeFactory;
-
-    public function __construct(OurHelperForScripts $creatuity, SelfExplainTester $selfExplainTester, ModuleNameResolver $moduleNameResolver, TypeFactory $typeFactory)
+    public function __construct(Creatuity $creatuity, SelfExplainTester $selfExplainTester, ModuleNameResolver $moduleNameResolver)
     {
         $this->creatuity = $creatuity;
         $this->selfExplainTester = $selfExplainTester;
         $this->moduleNameResolver = $moduleNameResolver;
-        $this->typeFactory = $typeFactory;
     }
 
-
-    /**
-     * @return OurHelperForScripts
-     */
-    public function getCreatuity()
+    public function getCreatuity(): Creatuity
     {
         return $this->creatuity;
     }
 
-    /**
-     * @return SelfExplainTester
-     */
-    public function getSelfExplainTester()
+    public function getSelfExplainTester(): SelfExplainTester
     {
         return $this->selfExplainTester;
     }
 
-    /**
-     * @return ModuleNameResolver
-     */
-    public function getModuleNameResolver()
+    public function getModuleNameResolver(): ModuleNameResolver
     {
         return $this->moduleNameResolver;
-    }
-
-    /**
-     * @return TypeFactory
-     */
-    public function getTypeFactory()
-    {
-        return $this->typeFactory;
     }
 }

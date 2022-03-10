@@ -2,81 +2,43 @@
 
 namespace Creatuity\Base\Model\CsvParser;
 
+use Closure;
+
 /**
  * @license https://warrenappliedlabs.com/license
- * @copyright Copyright (c) 2008-2018 Joshua Warren (https://warrenappliedlabs.com)
+ * @copyright Copyright (c) 2008-* Joshua Warren (https://warrenappliedlabs.com)
  */
 interface CsvParserInterface extends \IteratorAggregate
 {
-    /**
-     * @param string $fileName
-     * @return $this
-     */
-    public function parse($fileName);
+    public function parse(string $fileName): self;
 
     /**
-     * @param \Closure|string $logicModelInstanceOrName
-     * @return $this
+     * @param Closure|string $logicModelInstanceOrName
+     * @return self
      */
-    public function applyLogic($logicModelInstanceOrName);
+    public function applyLogic($logicModelInstanceOrName): self;
 
     /**
-     * @param \Closure|string $logicModelInstanceOrName
-     * @return $this
+     * @param Closure|string $logicModelInstanceOrName
+     * @return self
      */
-    public function applyChunkLogic($logicModelInstanceOrName);
+    public function applyChunkLogic($logicModelInstanceOrName): self;
 
-    /**
-     * @return array|null
-     */
-    public function run();
+    public function run(): ?array;
 
-    /**
-     * @param int $showProgressOnEveryChunk
-     * @param string $progressMessage
-     * @return $this
-     */
-    public function showProgress(OutputInterface $output = null, $showProgressOnEveryChunk = null, $progressMessage = null);
+    public function showProgress(OutputInterface $output = null, int $showProgressOnEveryChunk = null, string $progressMessage = null): self;
 
-    /**
-     * @param string $separator
-     * @return $this
-     */
-    public function columnSeparator($separator);
+    public function columnSeparator(string $separator): self;
 
-    /**
-     * @param bool $withTrimmingValues
-     * @return $this
-     */
-    public function withTrimmingValues($withTrimmingValues);
+    public function withTrimmingValues(bool $withTrimmingValues): self;
 
-    /**
-     * @param string $enclosure
-     * @return $this
-     */
-    public function enclosure($enclosure);
+    public function enclosure(string $enclosure): self;
 
-    /**
-     * @param string $escapeChar
-     * @return $this
-     */
-    public function escapeChar($escapeChar);
+    public function escapeChar(string $escapeChar): self;
 
-    /**
-     * @param bool $calculateTotalRowsNumBeforeProcessing
-     * @return $this
-     */
-    public function calculateTotalRowsNumBeforeProcessing($calculateTotalRowsNumBeforeProcessing);
+    public function calculateTotalRowsNumBeforeProcessing(bool $calculateTotalRowsNumBeforeProcessing): self;
 
-    /**
-     * @param bool $withHeader
-     * @return $this
-     */
-    public function withHeader($withHeader);
+    public function withHeader(bool $withHeader): self;
 
-    /**
-     * @param int $rowsInChunkCount
-     * @return $this
-     */
-    public function chunkSize($rowsInChunkCount);
+    public function chunkSize(int $rowsInChunkCount): self;
 }

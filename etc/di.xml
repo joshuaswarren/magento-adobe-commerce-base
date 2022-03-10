@@ -14,58 +14,9 @@
         </arguments>
     </type>
 
-    <type name="Creatuity\Base\ImportExport\Core\CoreCsvImporter" >
-        <arguments>
-            <argument name="output" xsi:type="object">Symfony\Component\Console\Output\ConsoleOutput</argument>
-        </arguments>
-    </type>
-
-    <type name="Creatuity\Base\ImportExport\Core\Customer" >
-        <arguments>
-            <argument name="output" xsi:type="object">Symfony\Component\Console\Output\ConsoleOutput</argument>
-        </arguments>
-    </type>
-
-    <type name="Creatuity\Base\ImportExport\Core\CustomerAddress\Logic" >
-        <arguments>
-            <argument name="output" xsi:type="object">Symfony\Component\Console\Output\ConsoleOutput</argument>
-        </arguments>
-    </type>
-
-    <type name="Creatuity\Base\ImportExport\Core\Importer\AdvancedPricing" >
-        <arguments>
-            <argument name="output" xsi:type="object">Symfony\Component\Console\Output\ConsoleOutput</argument>
-        </arguments>
-    </type>
-
-    <type name="Creatuity\Base\ImportExport\Plugin\ImportExportStoragePlugin" >
-        <arguments>
-            <argument name="output" xsi:type="object">Symfony\Component\Console\Output\ConsoleOutput</argument>
-        </arguments>
-    </type>
-
     <type name="Creatuity\Base\Model\CsvParser\Output" >
         <arguments>
             <argument name="output" xsi:type="object">Symfony\Component\Console\Output\ConsoleOutput</argument>
-        </arguments>
-    </type>
-
-    <virtualType name="CreatuityForScripts" type="Creatuity\Base\Helpers\OurHelperForScripts" shared="false">
-        <arguments>
-            <argument name="scope" xsi:type="string">scripts</argument>
-            <argument name="output" xsi:type="object">Symfony\Component\Console\Output\OutputInterface</argument>
-        </arguments>
-    </virtualType>
-
-    <type name="Creatuity\Base\Setup\Abstracts\AbstractUpgradeDataContext" shared="false">
-        <arguments>
-            <argument name="creatuity" xsi:type="object">CreatuityForScripts</argument>
-        </arguments>
-    </type>
-
-    <type name="Creatuity\Base\Setup\Abstracts\AbstractPatchContext" shared="false">
-        <arguments>
-            <argument name="creatuity" xsi:type="object">CreatuityForScripts</argument>
         </arguments>
     </type>
 
@@ -80,21 +31,9 @@
     <type name="Magento\Framework\Console\CommandList">
         <arguments>
             <argument name="commands" xsi:type="array">
-                <item name="creatuity:import:catalog_products" xsi:type="object">Creatuity\Base\CommandLine\Import\Catalog\Products</item>
-                <item name="creatuity:import:catalog_stock_sources" xsi:type="object">Creatuity\Base\CommandLine\Import\Catalog\StockSources</item>
-                <item name="creatuity:import:catalog_categories" xsi:type="object">Creatuity\Base\CommandLine\Import\Catalog\Categories</item>
-                <item name="creatuity:import:catalog_product_eav_attributes" xsi:type="object">Creatuity\Base\CommandLine\Import\EavAttributes\Product</item>
-                <item name="creatuity:import:customers" xsi:type="object">Creatuity\Base\CommandLine\Import\Customer\Customers</item>
-                <item name="creatuity:import:customer_addresses" xsi:type="object">Creatuity\Base\CommandLine\Import\Customer\CustomerAddresses</item>
-                <item name="creatuity:import:customers_composite" xsi:type="object">Creatuity\Base\CommandLine\Import\Customer\CustomersComposite</item>
-                <item name="creatuity:tools:install-files" xsi:type="object">Creatuity\Base\CommandLine\Tools\FilesInstallerCommand</item>
                 <item name="creatuity:tools:grid-sync" xsi:type="object">Creatuity\Base\CommandLine\Tools\GridSynchronizeCommand</item>
             </argument>
         </arguments>
-    </type>
-
-    <type name="\Magento\ImportExport\Model\Source\Import\Entity">
-        <plugin name="creatuity_base_hide_creatuity" type="Creatuity\Base\ImportExport\Plugin\ImportExportHideValue" />
     </type>
 
     <preference for="Creatuity\Base\Model\CsvParser\CsvParserInterface" type="Creatuity\Base\Model\CsvParser\Parser" />
@@ -102,79 +41,7 @@
 
     <preference for="Symfony\Component\Console\Output\OutputInterface" type="Symfony\Component\Console\Output\ConsoleOutput" />
 
-    <type name="\Magento\ImportExport\Model\ResourceModel\Import\Data" >
-        <plugin name="creatuity_base_dump_progress" type="Creatuity\Base\ImportExport\Plugin\ImportExportStoragePlugin" />
-    </type>
-
-    <type name="Creatuity\Base\Setup\Type\Eav\Attribute\Entity">
-        <arguments>
-            <argument name="validator" xsi:type="object">Creatuity\Base\Setup\Type\Eav\EavValidator</argument>
-        </arguments>
-    </type>
-    <type name="Creatuity\Base\Setup\Type\Eav\EavValidator">
-        <arguments>
-            <argument name="properties" xsi:type="array">
-                <item name="input" xsi:type="array">
-                    <item name="name" xsi:type="string">input</item>
-                    <item name="isRequired" xsi:type="boolean">true</item>
-                    <item name="isNotEmpty" xsi:type="boolean">true</item>
-                    <item name="isOneOf" xsi:type="const">Creatuity\Base\Setup\Type\Eav\Attribute\Entity\Required\Input::INPUT_TYPES</item>
-                </item>
-                <item name="label" xsi:type="array">
-                    <item name="name" xsi:type="string">label</item>
-                    <item name="isRequired" xsi:type="boolean">true</item>
-                    <item name="isNotEmpty" xsi:type="boolean">true</item>
-                </item>
-                <item name="default" xsi:type="array">
-                    <item name="name" xsi:type="string">default</item>
-                    <item name="isRequired" xsi:type="boolean">true</item>
-                </item>
-                <item name="required" xsi:type="array">
-                    <item name="name" xsi:type="string">required</item>
-                    <item name="isRequired" xsi:type="boolean">true</item>
-                    <item name="isType" xsi:type="string">boolean</item>
-                </item>
-                <item name="unique" xsi:type="array">
-                    <item name="name" xsi:type="string">unique</item>
-                    <item name="isRequired" xsi:type="boolean">true</item>
-                    <item name="isType" xsi:type="string">boolean</item>
-                </item>
-                <item name="user_defined" xsi:type="array">
-                    <item name="name" xsi:type="string">user_defined</item>
-                    <item name="isRequired" xsi:type="boolean">true</item>
-                    <item name="isType" xsi:type="string">boolean</item>
-                </item>
-                <item name="type" xsi:type="array">
-                    <item name="name" xsi:type="string">type</item>
-                    <item name="isRequired" xsi:type="boolean">true</item>
-                    <item name="isNotEmpty" xsi:type="boolean">true</item>
-                    <item name="isOneOf" xsi:type="const">Creatuity\Base\Setup\Type\Eav\Attribute\Entity\Required\Type::ATTRIBUTE_TYPES</item>
-                </item>
-            </argument>
-        </arguments>
-    </type>
-    <type name="\Creatuity\Base\Setup\Type\Eav\Attribute\Entity">
-        <arguments>
-            <argument name="propertyMap" xsi:type="array">
-                <item name="backend" xsi:type="string">backend_model</item>
-                <item name="type" xsi:type="string">backend_type</item>
-                <item name="table" xsi:type="string">backend_table</item>
-                <item name="frontend" xsi:type="string">frontend_model</item>
-                <item name="input" xsi:type="string">frontend_input</item>
-                <item name="label" xsi:type="string">frontend_label</item>
-                <item name="source" xsi:type="string">source_model</item>
-                <item name="required" xsi:type="string">is_required</item>
-                <item name="user_defined" xsi:type="string">is_user_defined</item>
-                <item name="default" xsi:type="string">default_value</item>
-                <item name="unique" xsi:type="string">is_unique</item>
-                <item name="global" xsi:type="string">is_global</item>
-            </argument>
-        </arguments>
-    </type>
-
     <preference for="Creatuity\Base\Model\Lock\Engine" type="Creatuity\Base\Model\Lock\Engine\File" />
-    <preference for="Creatuity\Base\Model\Catalog\CategoriesModifier\CategoriesProcessorInterface" type="Creatuity\Base\Model\Catalog\CategoriesModifier\CategoriesProcessor" />
-    <preference for="Creatuity\Base\Model\Catalog\CategoriesModifier\ExamplesFactoryInterface" type="Creatuity\Base\Model\Catalog\CategoriesModifier\ExamplesFactory" />
 
     <type name="Creatuity\Base\Helpers\Tools\GridSynchronizer">
         <arguments>

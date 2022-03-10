@@ -1,0 +1,6 @@
+{
+  "title" : "Test deprecated page",
+  "is_active" : true,
+  "identifier" : "test-deprecated-page",
+  "content_heading": ""
+}

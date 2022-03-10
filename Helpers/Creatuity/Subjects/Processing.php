@@ -2,20 +2,23 @@
 
 namespace Creatuity\Base\Helpers\Creatuity\Subjects;
 
+use Generator;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * @license https://warrenappliedlabs.com/license
+ * @copyright Copyright (c) 2008-* Joshua Warren (https://warrenappliedlabs.com)
+ */
 class Processing extends SubjectAbstract
 {
-    /**
-     * @param int $chunkSize
-     * @return \Generator
-     */
-    public function inChunk(array $data, $chunkSize, OutputInterface $output = null)
+    public function inChunk(array $dataToProcess, int $chunkSize, OutputInterface $output = null): Generator
     {
         $output = $output ?: $this->creatuity()->report()->output();
-        $dataSize = count($data);
-        $chunks = array_chunk($data, $chunkSize);
-        $data = [];
+        $dataSize = count($dataToProcess);
+        $chunks = array_chunk($dataToProcess, $chunkSize);
+
+        unset($dataToProcess);
+
         $chunksCount = count($chunks);
 
         $output->writeln(sprintf(' - There is %s items to process in %s chunk(s)...', number_format($dataSize, 0, '.', ' '), $chunksCount));

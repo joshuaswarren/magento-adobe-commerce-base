@@ -8,19 +8,15 @@ use Magento\Framework\ObjectManagerInterface;
 
 /**
  * @license https://warrenappliedlabs.com/license
- * @copyright Copyright (c) 2008-2018 Joshua Warren (https://warrenappliedlabs.com)
+ * @copyright Copyright (c) 2008-* Joshua Warren (https://warrenappliedlabs.com)
  */
 class SubjectsFactory
 {
     /**
      * @var SubjectAbstract[]
      */
-    protected $instances;
-
-    /**
-     * @var ObjectManagerInterface
-     */
-    protected $objectManager;
+    private array $instances;
+    private ObjectManagerInterface $objectManager;
 
     public function __construct(ObjectManagerInterface $objectManager)
     {
@@ -29,23 +25,16 @@ class SubjectsFactory
 
     /**
      * @param string $name
+     * @param Creatuity $creatuity
      * @param bool $isNew
-     * @param string $scope
+     * @param array $arguments
      * @return SubjectAbstract
      */
-    public function obtain($name, Creatuity $creatuity, $scope = '', $isNew = false, array $arguments = [])
+    public function obtain(string $name, Creatuity $creatuity, bool $isNew = false, array $arguments = []): SubjectAbstract
     {
-        $className = sprintf('\Creatuity\Base\Helpers\Creatuity\Subjects\\Scopes\\%s\\%s', ucfirst($scope), ucfirst($name));
+        $className = '\Creatuity\Base\Helpers\Creatuity\Subjects\\' . ucfirst($name);
 
-        if ( !$isNew && !empty($this->instances[$className]) ) {
-            return $this->instances[$className];
-        }
-
-        if ( !class_exists($className) ) {
-            $className = '\Creatuity\Base\Helpers\Creatuity\Subjects\\' . ucfirst($name);
-        }
-
-        if ( !$isNew && !empty($this->instances[$className]) ) {
+        if (!$isNew && !empty($this->instances[$className])) {
             return $this->instances[$className];
         }
 

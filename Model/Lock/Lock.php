@@ -2,40 +2,43 @@
 
 namespace Creatuity\Base\Model\Lock;
 
+/**
+ * @license https://warrenappliedlabs.com/license
+ * @copyright Copyright (c) 2008-* Joshua Warren (https://warrenappliedlabs.com)
+ */
 class Lock
 {
-
-    /** @var $name */
-    protected $name;
-
-    /** @var Engine */
-    protected $engine;
+    private Engine $engine;
+    private string $name;
 
     public function __construct(
         Engine $engine,
-        $name
-    )
-    {
+        string $name
+    ) {
         $this->engine = $engine;
         $this->name = $name;
     }
 
-    public function lock()
+    public function lock(): bool
     {
         return $this->engine->lock($this->name);
     }
 
-    public function tryLock($timeout = null)
+    public function tryLock($timeout = null): bool
     {
         return $this->engine->tryLock($this->name, $timeout);
     }
 
-    public function unlock()
+    public function unlock(): bool
     {
         return $this->engine->unlock($this->name);
     }
 
-    public function runInLock($callback)
+    /**
+     * @param callable $callback
+     * @return mixed
+     */
+    public function runInLock(callable $callback)
     {
         try {
             $this->lock();

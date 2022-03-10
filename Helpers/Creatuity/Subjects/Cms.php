@@ -16,7 +16,7 @@ use Magento\Framework\Exception\NoSuchEntityException;
 
 /**
  * @license https://warrenappliedlabs.com/license
- * @copyright Copyright (c) 2008-2021 Joshua Warren (https://warrenappliedlabs.com)
+ * @copyright Copyright (c) 2008-* Joshua Warren (https://warrenappliedlabs.com)
  */
 class Cms extends SubjectAbstract implements SubjectForModuleInterface
 {
@@ -49,16 +49,28 @@ class Cms extends SubjectAbstract implements SubjectForModuleInterface
         $this->contentProcessors = $contentProcessors;
     }
 
+    /**
+     * @throws Exception\ModuleNotSetException
+     */
     public function blockSave(string $identifier, array $params = [], bool $mustExists = false): BlockInterface
     {
+        $this->ensureModuleIsSet();
+
         $contentHtml = $this->creatuity()->resources($this->moduleName)->fileRead($this->blockPathPattern() . "{$identifier}.html");
         $contentHtml = $this->processContent($contentHtml);
 
         return $this->blockSaveContent($identifier, $params, $mustExists, $contentHtml);
     }
 
+    /**
+     * @throws NoSuchEntityException
+     * @throws ResourcesHelperException
+     * @throws Exception\ModuleNotSetException
+     */
     public function blockSaveContent(string $identifier, array $params, bool $mustExists, string $content): BlockInterface
     {
+        $this->ensureModuleIsSet();
+
         $config = $this->creatuity()->resources($this->moduleName)->jsonRead($this->blockPathPattern() . "{$identifier}.json", $params, [
             'identifier' => $identifier,
             'is_active' => Page::STATUS_ENABLED,
@@ -92,8 +104,17 @@ class Cms extends SubjectAbstract implements SubjectForModuleInterface
         return $block;
     }
 
+    /**
+     * @param string $identifier
+     * @param array $params
+     * @param bool $mustExists
+     * @return PageInterface
+     * @throws Exception\ModuleNotSetException
+     */
     public function pageSave(string $identifier, array $params = [], bool $mustExists = false): PageInterface
     {
+        $this->ensureModuleIsSet();
+
         return CmsUrlRewritePlugin::runWithEnabled(function () use ($identifier, $params, $mustExists) {
             $contentHtml = $this->creatuity()->resources($this->moduleName)->fileRead($this->pagePathPattern() . "{$identifier}.html");
             $contentHtml = $this->processContent($contentHtml);
@@ -102,8 +123,15 @@ class Cms extends SubjectAbstract implements SubjectForModuleInterface
         });
     }
 
+    /**
+     * @throws NoSuchEntityException
+     * @throws ResourcesHelperException
+     * @throws Exception\ModuleNotSetException
+     */
     public function pageSaveContent(string $identifier, array $params, bool $mustExists, string $content): PageInterface
     {
+        $this->ensureModuleIsSet();
+
         $layoutUpdateXml = $this->creatuity()->resources($this->moduleName)->fileRead($this->pagePathPattern() . "{$identifier}.layout.xml", false);
         $config = $this->creatuity()->resources($this->moduleName)->jsonRead($this->pagePathPattern() . "{$identifier}.json", $params, [
             'identifier' => $identifier,
@@ -279,21 +307,24 @@ class Cms extends SubjectAbstract implements SubjectForModuleInterface
 
     protected function pagePathPattern(): string
     {
-        return '';
+        return 'data' . DIRECTORY_SEPARATOR . 'cms' . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR;
     }
 
     protected function blockPathPattern(): string
     {
-        return '';
+        return 'data' . DIRECTORY_SEPARATOR . 'cms' . DIRECTORY_SEPARATOR . 'blocks' . DIRECTORY_SEPARATOR;
     }
 
-    /**
-     * @param string $moduleName
-     * @return $this
-     */
-    public function forModule($moduleName)
+    public function forModule(string $moduleName): self
     {
         $this->moduleName = $moduleName;
         return $this;
+    }
+
+    public function ensureModuleIsSet(): void
+    {
+        if (empty($this->moduleName)) {
+            throw new Creatuity\Subjects\Exception\ModuleNotSetException();
+        }
     }
 }

@@ -4,10 +4,11 @@ namespace Creatuity\Base\Helpers\Creatuity\Subjects\Report;
 
 use Creatuity\Base\Helpers\Creatuity;
 use Creatuity\Base\Helpers\Creatuity\Subjects\Report;
+use Exception;
 
 /**
  * @license https://warrenappliedlabs.com/license
- * @copyright Copyright (c) 2008-2018 Joshua Warren (https://warrenappliedlabs.com)
+ * @copyright Copyright (c) 2008-* Joshua Warren (https://warrenappliedlabs.com)
  */
 class ReportNull extends Report
 {
@@ -15,54 +16,43 @@ class ReportNull extends Report
     {
     }
 
-
-    public function ensureNextOutputWillBeSeparated($numOfLines = 1)
+    public function ensureNextOutputWillBeSeparated($numOfLines = 1): void
     {
-        return null;
     }
 
-    public function registerObserver(ReportObserverInterface $observer)
+    public function registerObserver(ReportObserverInterface $observer): void
     {
-        return null;
     }
 
-    public function unregisterObserver(ReportObserverInterface $observer)
+    public function unregisterObserver(ReportObserverInterface $observer): void
     {
-        return null;
     }
 
-    public function printProgressIndicator()
+    public function printProgressIndicator(): void
     {
-        return null;
     }
 
-    public function printMessage($txt)
+    public function printMessage(string $txt): void
     {
-        return null;
     }
 
-    public function printSuccess($txt)
+    public function printSuccess(string $txt): void
     {
-        return null;
     }
 
-    public function printWarning($txt)
+    public function printWarning(string $txt): void
     {
-        return null;
     }
 
-    public function printError($txt, \Exception $e = null)
+    public function printError(string $txt, Exception $e = null): void
     {
-        return null;
     }
 
-    public function printLine($char = '-', $doNotStackLines = true)
+    public function printLine(string $char = '-', bool $doNotStackLines = true): void
     {
-        return null;
     }
 
-    public function printEmptySeparator($numOf = 1)
+    public function printEmptySeparator(int $numOf = 1): void
     {
-        return null;
     }
 }

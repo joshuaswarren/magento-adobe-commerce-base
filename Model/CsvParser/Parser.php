@@ -2,80 +2,46 @@
 
 namespace Creatuity\Base\Model\CsvParser;
 
+use Closure;
 use Creatuity\Base\Model\CsvParser\Logic\Row\RowLogicAdapterFactory;
+use Exception;
+use Generator;
+use Traversable;
 
+/**
+ * @license https://warrenappliedlabs.com/license
+ * @copyright Copyright (c) 2008-* Joshua Warren (https://warrenappliedlabs.com)
+ */
 class Parser implements CsvParserInterface, UtilityInterface
 {
-    const MINIMUM_CHUNK_SIZE = 1;
+    private const MINIMUM_CHUNK_SIZE = 1;
+    private const DEFAULT_PROGRESS_STEP = 1;
 
-    const DEFAULT_CHUNK_SIZE = 100;
+    private string $separator = ',';
+    private bool $withTrimmingValues = true;
+    private string $enclosure = '"';
+    private string $escapeChar = '\\';
+    private bool $calculateTotalRowsNumBeforeProcessing = true;
+    private string $progressMessage = 'Processed rows: %s from %s (%.2f %%)';
+    private int $chunkSize = 100;
+    private int $rowCount = 0;
+    private bool $withHeader = true;
+    private string $filePath;
+    private bool $isParsingEnabled;
+    private bool $isFirst;
+    private bool $isLast;
 
-    const DEFAULT_PROGRESS_STEP = 1;
+    /** @var Closure|string */
+    private $logicModelInstanceOrName;
 
-    const DEFAULT_PROGRESS_MESSAGE = 'Processed rows: %s from %s (%.2f %%)';
+    private OutputInterface $output;
 
-    /** @var string */
-    protected $separator = ',';
-
-    /** @var bool */
-    protected $withTrimmingValues = true;
-
-    /** @var string */
-    protected $enclosure = '"';
-
-    /** @var string */
-    protected $escapeChar = '\\';
-
-    /** @var bool */
-    protected $calculateTotalRowsNumBeforeProcessing = true;
-
-    /** @var string */
-    protected $progressMessage;
-
-    /** @var int */
-    protected $rowCount = 0;
-
-    /** @var bool */
-    protected $withHeader = true;
-
-    /** @var string */
-    protected $filePath;
-
-    /** @var \Closure|string */
-    protected $logicModelInstanceOrName;
-
-    /** @var OutputInterface */
-    protected $output;
-
-    /** @var OutputFactory */
-    protected $outputFactory;
-
-    /** @var ChunkLogicFactory */
-    protected $chunkLogicFactory;
-
-    /** @var int */
-    protected $chunkSize;
-
-    /** @var int */
-    protected $showProgressOnEveryChunk;
-
-    /** @var bool */
-    protected $isParsingEnabled;
-
-    /** @var CsvFileFactory */
-    protected $csvFileFactory;
-
-    /** @var RowLogicFactory */
-    protected $rowLogicFactory;
-
-    /** @var RowLogicAdapterFactory */
-    protected $rowLogicAdapterFactory;
-
-    /** @var bool */
-    protected $isFirst;
-
-    /** @var bool */
-    protected $isLast;
+    private OutputFactory $outputFactory;
+    private ChunkLogicFactory $chunkLogicFactory;
+    private int $showProgressOnEveryChunk;
+    private CsvFileFactory $csvFileFactory;
+    private RowLogicFactory $rowLogicFactory;
+    private RowLogicAdapterFactory $rowLogicAdapterFactory;
 
     public function __construct(
         ChunkLogicFactory $chunkLogicFactory,
@@ -83,23 +49,17 @@ class Parser implements CsvParserInterface, UtilityInterface
         RowLogicAdapterFactory $rowLogicAdapterFactory,
         OutputFactory $outputFactory,
         CsvFileFactory $csvReadFactory
-    )
-    {
-        $this->chunkLogicFactory = $chunkLogicFactory;
+    ) {
         $this->outputFactory = $outputFactory;
-        $this->csvFileFactory = $csvReadFactory;
-        $this->chunkSize = static::DEFAULT_CHUNK_SIZE;
-        $this->progressMessage = static::DEFAULT_PROGRESS_MESSAGE;
+        $this->chunkLogicFactory = $chunkLogicFactory;
         $this->showProgressOnEveryChunk = static::DEFAULT_PROGRESS_STEP;
+        $this->csvFileFactory = $csvReadFactory;
         $this->rowLogicFactory = $rowLogicFactory;
         $this->rowLogicAdapterFactory = $rowLogicAdapterFactory;
     }
 
-    /**
-     * @return \Traversable
-     */
     #[\ReturnTypeWillChange]
-    public function getIterator()
+    public function getIterator(): Traversable
     {
         foreach($this->process() as $rows) {
             foreach($rows as $row) {
@@ -109,14 +69,13 @@ class Parser implements CsvParserInterface, UtilityInterface
     }
 
     /**
-     * @return array|null
+     * @throws Exception
      */
-    public function run()
+    public function run(): ?array
     {
         $wholeRows = [];
 
         foreach($this->process() as $rows) {
-
             if (!$this->logicModelInstanceOrName) {
                 $wholeRows = array_merge($wholeRows, $rows);
             }
@@ -125,7 +84,10 @@ class Parser implements CsvParserInterface, UtilityInterface
         return !$this->logicModelInstanceOrName ? $wholeRows : null;
     }
 
-    protected function process()
+    /**
+     * @throws ParserException
+     */
+    private function process(): Generator
     {
         $logicModelInstance = $this->chunkLogicFactory->create($this->logicModelInstanceOrName);
 
@@ -154,12 +116,12 @@ class Parser implements CsvParserInterface, UtilityInterface
                 if ($this->withHeader) {
                     try {
                         $rowData = array_combine($headerRow, $rowData);
-                    } catch ( \Exception $e ) {
+                    } catch ( Exception $e ) {
                         $msg  = sprintf('PHP array_combine error: Header and data row columns count mismatch. Header has %s columns, data row has %s columns', count($headerRow), count($rowData)) . PHP_EOL;
                         $msg .= sprintf('Line number: %s', $processedRowNumber + 1) . PHP_EOL;
                         $msg .= 'Header: ' . print_r($headerRow, true) . PHP_EOL;
                         $msg .= 'Row: ' . print_r($rowData, true);
-                        throw new \Exception($msg);
+                        throw new Exception($msg);
                     }
                 }
 
@@ -200,7 +162,7 @@ class Parser implements CsvParserInterface, UtilityInterface
         }
     }
 
-    protected function countRowsNumber()
+    private function countRowsNumber(): void
     {
         $fileRead = null;
         try {
@@ -218,17 +180,14 @@ class Parser implements CsvParserInterface, UtilityInterface
     }
 
     /**
-     * @return array
+     * @throws Exception
      */
-    protected function loadCsvLineFromFile(CsvFile $fileRead)
+    private function loadCsvLineFromFile(CsvFile $fileRead): array
     {
         return $fileRead->readCsv($this->separator, $this->enclosure, $this->escapeChar);
     }
 
-    /**
-     * @param int $processedRowNumber
-     */
-    protected function displayProgress($processedRowNumber, $additionalConditionResult = true)
+    private function displayProgress(int $processedRowNumber, bool $additionalConditionResult = true): void
     {
         if ( $additionalConditionResult
             && $this->logicModelInstanceOrName && $this->hasActiveOutput()
@@ -238,12 +197,7 @@ class Parser implements CsvParserInterface, UtilityInterface
         }
     }
 
-    /**
-     * @param string $separator
-     *
-     * @return $this
-     */
-    public function columnSeparator($separator)
+    public function columnSeparator(string $separator): self
     {
         $this->separator = $separator;
         return $this;
@@ -254,77 +208,51 @@ class Parser implements CsvParserInterface, UtilityInterface
      *
      * @return $this
      */
-    public function withTrimmingValues($withTrimmingValues)
+    public function withTrimmingValues($withTrimmingValues): self
     {
         $this->withTrimmingValues = $withTrimmingValues;
         return $this;
     }
 
-    /**
-     * @param string $enclosure
-     *
-     * @return $this
-     */
-    public function enclosure($enclosure)
+    public function enclosure(string $enclosure): self
     {
         $this->enclosure = $enclosure;
         return $this;
     }
 
-    /**
-     * @param string $escapeChar
-     *
-     * @return $this
-     */
-    public function escapeChar($escapeChar)
+    public function escapeChar(string $escapeChar): self
     {
         $this->escapeChar = $escapeChar;
         return $this;
     }
 
-    /**
-     * @param bool $calculateTotalRowsNumBeforeProcessing
-     *
-     * @return $this
-     */
-    public function calculateTotalRowsNumBeforeProcessing($calculateTotalRowsNumBeforeProcessing)
+    public function calculateTotalRowsNumBeforeProcessing(bool $calculateTotalRowsNumBeforeProcessing): self
     {
         $this->calculateTotalRowsNumBeforeProcessing = $calculateTotalRowsNumBeforeProcessing;
         return $this;
     }
 
-    /**
-     * @param bool $withHeader
-     *
-     * @return $this
-     */
-    public function withHeader($withHeader)
+    public function withHeader(bool $withHeader): self
     {
         $this->withHeader = $withHeader;
         return $this;
     }
 
-    /**
-     * @param int $showProgressOnEveryChunk
-     * @param string $progressMessage
-     *
-     * @return $this
-     */
-    public function showProgress(OutputInterface $output = null, $showProgressOnEveryChunk = null, $progressMessage = null)
+    public function showProgress(OutputInterface $output = null, int $showProgressOnEveryChunk = null, string $progressMessage = null): self
     {
         $this->output = is_null($output) ? $this->outputFactory->create() : $output;
         $this->showProgressOnEveryChunk = !is_null($showProgressOnEveryChunk) ? $showProgressOnEveryChunk : static::DEFAULT_PROGRESS_STEP;
-        $this->progressMessage = !is_null($progressMessage) ? $progressMessage : static::DEFAULT_PROGRESS_MESSAGE;
+        $this->progressMessage = !is_null($progressMessage) ? $progressMessage : $this->progressMessage;
 
         return $this;
     }
 
     /**
-     * @param \Closure|string $logicModelInstanceOrName
-     *
-     * @return $this
+     * @param Closure|string $logicModelInstanceOrName
+     * @return self
+     * @throws ParserException
      */
-    public function applyLogic($logicModelInstanceOrName)
+    public function applyLogic($logicModelInstanceOrName): self
     {
         $rowLogicInstance = $this->rowLogicFactory->create($logicModelInstanceOrName);
 
@@ -333,50 +261,37 @@ class Parser implements CsvParserInterface, UtilityInterface
     }
 
     /**
-     * @param int $chunkSize
-     * @param \Closure|string $logicModelInstanceOrName
-     * @return $this
+     * @param Closure|string $logicModelInstanceOrName
+     * @return self
      */
-    public function applyChunkLogic($logicModelInstanceOrName)
+    public function applyChunkLogic($logicModelInstanceOrName): self
     {
         $this->logicModelInstanceOrName = $logicModelInstanceOrName;
         return $this;
     }
 
-    /**
-     * @param string $fileName
-     *
-     * @return $this
-     */
-    public function parse($fileName)
+    public function parse(string $fileName): self
     {
         $this->filePath = $fileName;
         return $this;
     }
 
-    /**
-     * @return bool
-     */
-    protected function hasActiveOutput()
+    private function hasActiveOutput(): bool
     {
         return !empty($this->progressMessage) && $this->output instanceof OutputInterface;
     }
 
-    /**
-     * @return int
-     */
-    public function rowCount()
+    public function rowCount(): int
     {
         return $this->rowCount;
     }
 
     /**
-     * @param int $rowsInChunkCount
-     * @return $this
+     * @throws ParserException
      */
-    public function chunkSize($rowsInChunkCount)
+    public function chunkSize(int $rowsInChunkCount): self
     {
-        if ( $rowsInChunkCount < static::MINIMUM_CHUNK_SIZE ) {
+        if ($rowsInChunkCount < static::MINIMUM_CHUNK_SIZE) {
             throw new ParserException(sprintf('Invalid chunk size: %s - Chunk size must be equal %s or more', $rowsInChunkCount, static::MINIMUM_CHUNK_SIZE));
         }
 
@@ -384,43 +299,34 @@ class Parser implements CsvParserInterface, UtilityInterface
         return $this;
     }
 
-    public function stop()
+    public function stop(): void
     {
         $this->isParsingEnabled = false;
     }
 
-    /**
-     * @return bool
-     */
-    public function isRunning()
+    public function isRunning(): bool
     {
         return $this->isParsingEnabled;
     }
 
-    public function setIsFirst($isFirst = true)
+    public function setIsFirst(bool $isFirst = true): self
     {
         $this->isFirst = $isFirst;
         return $this;
     }
 
-    public function setIsLast($isLast = true)
+    public function setIsLast(bool $isLast = true): self
     {
         $this->isLast = $isLast;
         return $this;
     }
 
-    /**
-     * @return bool
-     */
-    public function isFirst()
+    public function isFirst(): bool
     {
         return $this->isFirst;
     }
 
-    /**
-     * @return bool
-     */
-    public function isLast()
+    public function isLast(): bool
     {
         return $this->isLast;
     }

@@ -2,29 +2,20 @@
 
 namespace Creatuity\Base\Model;
 
+use Exception;
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\App\ProductMetadataInterface;
 
 /**
  * @license https://warrenappliedlabs.com/license
- * @copyright Copyright (c) 2008-2019 Joshua Warren (https://warrenappliedlabs.com)
+ * @copyright Copyright (c) 2008-* Joshua Warren (https://warrenappliedlabs.com)
  */
 class MagentoVersion
 {
-    /**
-     * @var MagentoVersion
-     */
-    protected static $instance;
+    private static MagentoVersion $instance;
+    private string $currentMagentoVersion;
 
-    /**
-     * @var ProductMetadataInterface
-     */
-    protected $productMetadata;
-
-    /**
-     * @var string
-     */
-    protected $currentMagentoVersion;
+    private ProductMetadataInterface $productMetadata;
 
     public function __construct(ProductMetadataInterface $productMetadata)
     {
@@ -32,12 +23,12 @@ class MagentoVersion
     }
 
     /**
-     * @return bool
+     * @throws Exception
      */
-    public function ifLowerThan($magentoVersion, callable $toExecute = null)
+    public function ifLowerThan($magentoVersion, callable $toExecute = null): bool
     {
         if ($toExecute) {
-            throw new \Exception("Deprecated. Magento cannot handle anonymous functions in the compiler. Please use 'if (isLowerThan($magentoVersion)) {}' syntax.");
+            throw new Exception("Deprecated. Magento cannot handle anonymous functions in the compiler. Please use 'if (isLowerThan($magentoVersion)) {}' syntax.");
         }
 
         return $this->processCondition(
@@ -47,12 +38,12 @@ class MagentoVersion
     }
 
     /**
-     * @return bool
+     * @throws Exception
      */
-    public function ifHigherThan($magentoVersion, callable $toExecute = null)
+    public function ifHigherThan(string $magentoVersion, callable $toExecute = null): bool
     {
         if ($toExecute) {
-            throw new \Exception("Deprecated. Magento cannot handle anonymous functions in the compiler. Please use 'if (ifHigherThan($magentoVersion)) {}' syntax.");
+            throw new Exception("Deprecated. Magento cannot handle anonymous functions in the compiler. Please use 'if (ifHigherThan($magentoVersion)) {}' syntax.");
         }
 
         return $this->processCondition(
@@ -62,16 +53,16 @@ class MagentoVersion
     }
 
     /**
-     * @return bool
+     * @throws Exception
      */
-    public function ifBetween($magentoVersionOldest, $magentoVersionLatest, callable $toExecute = null)
+    public function ifBetween(string $magentoVersionOldest, string $magentoVersionLatest, callable $toExecute = null): bool
     {
         if ($toExecute) {
-            throw new \Exception("Deprecated. Magento cannot handle anonymous functions in the compiler. Please use 'if (ifBetween($magentoVersionOldest, $magentoVersionLatest)) {}' syntax.");
+            throw new Exception("Deprecated. Magento cannot handle anonymous functions in the compiler. Please use 'if (ifBetween($magentoVersionOldest, $magentoVersionLatest)) {}' syntax.");
         }
 
-        return $this->processCondition(true
-            && version_compare($this->currentMagentoVersion(), $magentoVersionOldest, '>')
+        return $this->processCondition(
+            version_compare($this->currentMagentoVersion(), $magentoVersionOldest, '>')
             && version_compare($this->currentMagentoVersion(), $magentoVersionLatest, '<'),
             $toExecute
         );
@@ -82,6 +73,8 @@ class MagentoVersion
         if (version_compare($this->currentMagentoVersion(), $magentoVersion, '<')) {
             return require $fileToInclude;
         }
+
+        return null;
     }
 
     public function includeIfHigherThan(string $magentoVersion, string $fileToInclude)
@@ -89,25 +82,24 @@ class MagentoVersion
         if (version_compare($this->currentMagentoVersion(), $magentoVersion, '>')) {
             return require $fileToInclude;
         }
+
+        return null;
     }
 
-    public function includeIfBetween(string $magentoVersionOldest, $magentoVersionLatest, string $fileToInclude)
+    public function includeIfBetween(string $magentoVersionOldest, string $magentoVersionLatest, string $fileToInclude)
     {
-        if (true
-            && version_compare($this->currentMagentoVersion(), $magentoVersionOldest, '>')
+        if (version_compare($this->currentMagentoVersion(), $magentoVersionOldest, '>')
             && version_compare($this->currentMagentoVersion(), $magentoVersionLatest, '<')
         ) {
             return require $fileToInclude;
         }
+
+        return null;
     }
 
-    /**
-     * @param bool $condition
-     * @return bool
-     */
-    protected function processCondition($condition, callable $toExecute = null)
+    private function processCondition(bool $condition, callable $toExecute = null): bool
     {
-        if ( $condition ) {
+        if ($condition) {
             if (!$toExecute) {
                 return true;
             }
@@ -117,23 +109,20 @@ class MagentoVersion
                 return false;
             }
         }
+
+        return true;
     }
 
-    /**
-     * @return string
-     */
-    protected function currentMagentoVersion()
+    protected function currentMagentoVersion(): string
     {
         if (!$this->currentMagentoVersion) {
             $this->currentMagentoVersion = $this->productMetadata->getVersion();
         }
+
         return $this->currentMagentoVersion;
     }
 
-    /**
-     * @return MagentoVersion
-     */
-    public static function instance()
+    public static function instance(): MagentoVersion
     {
         if (!static::$instance) {
             static::$instance = ObjectManager::getInstance()->get(static::class);

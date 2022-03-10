@@ -2,9 +2,13 @@
 
 namespace Creatuity\Base\Setup\Abstracts\Patch\SchemaPatch;
 
-\Creatuity\Base\Model\MagentoVersion::instance()->includeIfLowerThan(
-    '2.3', __DIR__ . '/Earlier23.inc'
-);
-
+/**
+ * @license https://warrenappliedlabs.com/license
+ * @copyright Copyright (c) 2008-* Joshua Warren (https://warrenappliedlabs.com)
+ *
+ * @deprecated Use core DataPatchInterface, include desired pieces via constructor
+ */
 interface SchemaPatchInterface extends \Magento\Framework\Setup\Patch\SchemaPatchInterface
-{}
+{
+
+}

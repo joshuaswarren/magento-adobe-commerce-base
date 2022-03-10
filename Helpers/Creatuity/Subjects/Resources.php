@@ -3,86 +3,79 @@
 namespace Creatuity\Base\Helpers\Creatuity\Subjects;
 
 use Creatuity\Base\Helpers\Creatuity;
+use Creatuity\Base\Helpers\Creatuity\Subjects\Exception\ModuleNotSetException;
+use Exception;
+use Generator;
+use Magento\Framework\Exception\ValidatorException;
 use Magento\Framework\Filesystem\Directory\ReadFactory;
 use Magento\Framework\Filesystem\Directory\WriteFactory;
 use Magento\Framework\Module\Dir\Reader as ModuleReader;
 use Magento\Framework\Filesystem\DirectoryList;
 use Magento\Framework\Filesystem\Directory\ReadInterface as DirectoryReadInterface;
 use Magento\Framework\Filesystem\Directory\WriteInterface as DirectoryWriteInterface;
-use Magento\Framework\Filesystem\File\ReadInterface as FileReadInterface;
 use Magento\Framework\Filesystem\File\ReadInterface;
 use Magento\Framework\Exception\FileSystemException;
+use Magento\Framework\Serialize\SerializerInterface;
 
 /**
  * @license https://warrenappliedlabs.com/license
- * @copyright Copyright (c) 2008-2018 Joshua Warren (https://warrenappliedlabs.com)
+ * @copyright Copyright (c) 2008-* Joshua Warren (https://warrenappliedlabs.com)
  */
 class Resources extends SubjectAbstract implements SubjectForModuleInterface
 {
-    /**
-     * @var ModuleReader
-     */
-    protected $moduleReader;
-
-    /**
-     * @var ReadFactory
-     */
-    protected $readFactory;
-
-    /**
-     * @var WriteFactory
-     */
-    protected $writeFactory;
-
-    /**
-     * @var DirectoryList
-     */
-    protected $directoryList;
-
-    /**
-     * @var string
-     */
-    protected $moduleName;
+    private ModuleReader $moduleReader;
+    private ReadFactory $readFactory;
+    private WriteFactory $writeFactory;
+    private DirectoryList $directoryList;
+    private SerializerInterface $serializer;
+    private string $moduleName;
 
     public function __construct(
         ModuleReader $moduleReader,
         ReadFactory $readFactory,
         WriteFactory $writeFactory,
         DirectoryList $directoryList,
-        Creatuity $creatuity
+        Creatuity $creatuity,
+        SerializerInterface $serializer
     ) {
         parent::__construct($creatuity);
-
         $this->moduleReader = $moduleReader;
         $this->readFactory = $readFactory;
         $this->writeFactory = $writeFactory;
         $this->directoryList = $directoryList;
+        $this->serializer = $serializer;
     }
 
     /**
      * @param string $path
      * @param DirectoryReadInterface|string $relativeTo
      * @return string
+     * @throws ResourcesHelperException
+     * @throws ValidatorException
      */
-    public function fileRelPath($path, $relativeTo = '')
+    public function fileRelPath(string $path, $relativeTo = ''): string
     {
         if ($relativeTo === '') {
             $relativeTo = $this->projectDirReader();
         } elseif (!$relativeTo instanceof DirectoryReadInterface) {
             $relativeTo = $this->readFactory->create($relativeTo);
         }
+
         $absPath = $this->fileAbsPath($path);
 
         return $relativeTo->getRelativePath($absPath);
     }
 
-    public function jsonRead($path, array $overrides = [], $defaults = [])
+    /**
+     * @throws ResourcesHelperException
+     */
+    public function jsonRead(string $path, array $overrides = [], array $defaults = []): array
     {
         $configJson = $this->fileRead($path, false);
 
         $jsonContent = [];
         if ($configJson !== null) {
-            $jsonContent = json_decode($configJson, true);
+            $jsonContent = $this->serializer->unserialize($configJson);
             if (!is_array($jsonContent)) {
                 throw new ResourcesHelperException("Invalid json at: {$path} ");
             }
@@ -91,10 +84,7 @@ class Resources extends SubjectAbstract implements SubjectForModuleInterface
         return array_replace_recursive($defaults, $jsonContent, $overrides);
     }
 
-    /**
-     * @return string
-     */
-    public function fileRead($path, $mustExists = true)
+    public function fileRead(string $path, bool $mustExists = true): ?string
     {
         $reader = $this->fileReader($path, $mustExists);
         if ($reader === null) {
@@ -113,22 +103,22 @@ class Resources extends SubjectAbstract implements SubjectForModuleInterface
         return $content;
     }
 
-    public function isExists($path)
+    public function isExists(string $path): bool
     {
         $reader = $this->fileReader($path, false);
 
         return $reader !== null;
     }
 
-    public function ensureExists($path)
+    /**
+     * @throws ResourcesHelperException
+     */
+    public function ensureExists(string $path): void
     {
         $this->fileAbsPath($path, true);
     }
 
-    /**
-     * @return \Generator|string[]
-     */
-    public function fileReadLines($path, $mustExists = true, $trim = true)
+    public function fileReadLines(string $path, bool $mustExists = true, bool $trim = true): Generator
     {
         $reader = $this->fileReader($path, $mustExists);
 
@@ -147,8 +137,11 @@ class Resources extends SubjectAbstract implements SubjectForModuleInterface
         }
     }
 
-
-    protected function readLine(ReadInterface $reader)
+    /**
+     * @param ReadInterface $reader
+     * @return false|string
+     */
+    private function readLine(ReadInterface $reader)
     {
         try {
             return trim($reader->readLine(65535, "\n"));
@@ -158,9 +151,11 @@ class Resources extends SubjectAbstract implements SubjectForModuleInterface
     }
 
     /**
-     * @return FileReadInterface
+     * @throws ResourcesHelperException
+     * @throws FileSystemException
+     * @throws Exception
      */
-    public function fileReader($path, $mustExists = true)
+    public function fileReader(string $path, bool $mustExists = true): ?ReadInterface
     {
         $path = $this->fileAbsPath($path, $mustExists);
         if ($path === null) {
@@ -171,7 +166,10 @@ class Resources extends SubjectAbstract implements SubjectForModuleInterface
             ->openFile(pathinfo($path, PATHINFO_BASENAME));
     }
 
-    public function fileAbsPath($path, $mustExists = true)
+    /**
+     * @throws ResourcesHelperException
+     */
+    public function fileAbsPath(string $path, bool $mustExists = true): ?string
     {
         $moduleReader = $this->moduleDirReader();
         if ($moduleReader && $moduleReader->isExist($path)) {
@@ -199,10 +197,7 @@ class Resources extends SubjectAbstract implements SubjectForModuleInterface
         );
     }
 
-    /**
-     * @return DirectoryReadInterface
-     */
-    public function moduleDirReader($subDir = '')
+    public function moduleDirReader(string $subDir = ''): ?DirectoryReadInterface
     {
         if ( !$this->moduleName ) {
             return null;
@@ -212,28 +207,19 @@ class Resources extends SubjectAbstract implements SubjectForModuleInterface
         return $this->readFactory->create($moduleRoot . '/' . $subDir);
     }
 
-    /**
-     * @return DirectoryWriteInterface
-     */
-    public function moduleDirWriter($subDir = '')
+    public function moduleDirWriter(string $subDir = ''): DirectoryWriteInterface
     {
         throw new ResourcesHelperException('Saving files in modules is forbidden.');
     }
 
-    /**
-     * @return DirectoryReadInterface
-     */
-    public function projectDirReader($subDir = '')
+    public function projectDirReader(string $subDir = ''): DirectoryReadInterface
     {
         $projectRoot = $this->directoryList->getRoot();
 
         return $this->readFactory->create($projectRoot . '/' . $subDir);
     }
 
-    /**
-     * @return DirectoryWriteInterface
-     */
-    public function projectDirWriter($subDir = '')
+    public function projectDirWriter(string $subDir = ''): DirectoryWriteInterface
     {
         $projectRoot = $this->directoryList->getRoot();
 
@@ -241,34 +227,35 @@ class Resources extends SubjectAbstract implements SubjectForModuleInterface
     }
 
     /**
-     * @return DirectoryReadInterface
+     * @throws Exception
      */
-    public function absoluteDirReader($dir = '/')
+    public function absoluteDirReader(string $dir = '/'): DirectoryReadInterface
     {
         if (empty($dir) || $dir == '/') {
-            throw new \Exception("Since Magento 2.4+, due to security reasons, please do not use root directory as an anchor!");
+            throw new Exception("Since Magento 2.4+, due to security reasons, please do not use root directory as an anchor!");
         }
+
         return $this->readFactory->create($dir);
     }
 
-    /**
-     * @return DirectoryWriteInterface
-     */
-    public function absoluteDirWriter($dir = '/')
+    public function absoluteDirWriter(string $dir = '/'): DirectoryWriteInterface
     {
         return $this->writeFactory->create($dir);
     }
 
-    /**
-     * @param string $moduleName
-     * @return $this
-     */
-    public function forModule($moduleName)
+    public function forModule(string $moduleName): self
     {
         $this->moduleName = $moduleName;
         return $this;
     }
+
+    public function ensureModuleIsSet(): void
+    {
+        if (empty($this->moduleName)) {
+            throw new Creatuity\Subjects\Exception\ModuleNotSetException();
+        }
+    }
 }
 
-class ResourcesHelperException extends \Exception
+class ResourcesHelperException extends Exception
 {}

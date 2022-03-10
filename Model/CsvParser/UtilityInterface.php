@@ -3,27 +3,16 @@
 namespace Creatuity\Base\Model\CsvParser;
 
 /**
- * @category Creatuity
- * @package intcb
- * @copyright Copyright (c) 2008-2017 Joshua Warren (https://warrenappliedlabs.com)
  * @license https://warrenappliedlabs.com/license
+ * @copyright Copyright (c) 2008-* Joshua Warren (https://warrenappliedlabs.com)
  */
 interface UtilityInterface
 {
-    /**
-     * @return int
-     */
-    public function rowCount();
+    public function rowCount(): int;
 
-    public function stop();
+    public function stop(): void;
 
-    /**
-     * @return bool
-     */
-    public function isFirst();
+    public function isFirst(): bool;
 
-    /**
-     * @return bool
-     */
-    public function isLast();
+    public function isLast(): bool;
 }
