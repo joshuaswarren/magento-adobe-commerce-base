@@ -10,6 +10,8 @@ use Creatuity\Base\Helpers\Creatuity\Subjects\FilesInstaller as FilesInstallerUt
 use Creatuity\Base\Helpers\Creatuity\Subjects\Indexer as IndexerUtility;
 use Creatuity\Base\Helpers\Creatuity\Subjects\Processing as ProcessingUtility;
 use Creatuity\Base\Helpers\Creatuity\Subjects\Report as ReportUtility;
+use Creatuity\Base\Helpers\Creatuity\Subjects\Seo as SeoUtility;
+use Creatuity\Base\Helpers\Creatuity\Subjects\Setting as SettingUtility;
 use Exception;
 use Magento\Framework\Setup\Patch\DataPatchInterface;
 
@@ -22,6 +24,8 @@ class TestPatch implements DataPatchInterface
     private EmulateUtility $emulateUtility;
     private IndexerUtility $indexerUtility;
     private ProcessingUtility $processingUtility;
+    private SeoUtility $seoUtility;
+    private SettingUtility $settingUtility;
 
     public function __construct(
         CmsUtility $cmsUtility,
@@ -30,7 +34,9 @@ class TestPatch implements DataPatchInterface
         DatabaseUtility $databaseUtility,
         EmulateUtility $emulateUtility,
         IndexerUtility $indexerUtility,
-        ProcessingUtility $processingUtility
+        ProcessingUtility $processingUtility,
+        SeoUtility $seoUtility,
+        SettingUtility $settingUtility
     ) {
         $this->cmsUtility = $cmsUtility;
         $this->reportUtility = $reportUtility;
@@ -39,6 +45,8 @@ class TestPatch implements DataPatchInterface
         $this->emulateUtility = $emulateUtility;
         $this->indexerUtility = $indexerUtility;
         $this->processingUtility = $processingUtility;
+        $this->seoUtility = $seoUtility;
+        $this->settingUtility = $settingUtility;
     }
 
     /**
@@ -84,6 +92,15 @@ class TestPatch implements DataPatchInterface
         foreach ($batches as $batch) {
             $this->reportUtility->printMessage('Processing batch: ' . implode(', ', $batch));
         }
+
+        /** Seo Subject Test */
+        $difficultUrl = '**Super Promotion**';
+        $sanitizedUrl = $this->seoUtility->nameToSeoUrlKey($difficultUrl);
+        $this->reportUtility->printMessage('Seo processing: ' . $difficultUrl . ' => ' . $sanitizedUrl);
+
+        /** Setting Subject Test */
+        $searchEngineConfig = $this->settingUtility->load('catalog/search/engine');
+        $this->reportUtility->printSuccess('Database Search Engine: ' . $searchEngineConfig);
 
         return $this;
     }

@@ -57,6 +57,15 @@ class DeprecatedTestPatch extends AbstractDataPatch
             $this->creatuity()->report()->printMessage('Processing batch: ' . implode(', ', $batch));
         }
 
+        /** Seo Subject Test */
+        $difficultUrl = '**Super Promotion**';
+        $sanitizedUrl = $this->creatuity()->seo()->nameToSeoUrlKey($difficultUrl);
+        $this->creatuity()->report()->printMessage('Seo processing: ' . $difficultUrl . ' => ' . $sanitizedUrl);
+
+        /** Setting Subject Test */
+        $searchEngineConfig = $this->creatuity()->setting()->load('catalog/search/engine');
+        $this->creatuity()->report()->printSuccess('Database Search Engine: ' . $searchEngineConfig);
+
         return $this;
     }
 
