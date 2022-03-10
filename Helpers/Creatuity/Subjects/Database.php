@@ -24,16 +24,6 @@ class Database extends SubjectAbstract
         $this->connectionsPool = $connectionsPool;
     }
 
-
-    public function runSqlFile(string $sqlIdentifier): void
-    {
-        $sqlQuery = $this->creatuity()->resources()->fileRead("data/sql/{$sqlIdentifier}.sql");
-
-        $this->runSql($sqlQuery);
-
-        $this->creatuity()->report()->printSuccess("Executed sql file from 'data/sql/{$sqlIdentifier}.sql'");
-    }
-
     public function runSql(string $sqlQuery): void
     {
         // Hack for segmentation fault PCRE bug for preg_replace()

@@ -19,7 +19,7 @@ class Indexer extends SubjectAbstract
     /**
      * @var IndexerInterface[]
      */
-    private array $indexes;
+    private array $indexes = [];
 
     public function __construct(Creatuity $creatuity, Processor $indexer, CollectionFactory $indexesCollectionFactory)
     {
@@ -58,7 +58,7 @@ class Indexer extends SubjectAbstract
 
     public function reindexCustomerGrid(): self
     {
-        return $this->reindexSelected(['design_config_grid']);
+        return $this->reindexSelected(['customer_grid']);
     }
 
     public function reindexCatalogCategoryProduct(): self
@@ -140,12 +140,11 @@ class Indexer extends SubjectAbstract
      */
     private function loadIndexes(): array
     {
-        if ( !$this->indexes ) {
-            foreach ( $this->indexesCollectionFactory->create()->getItems() as $index ) {
+        if (empty($this->indexes)) {
+            foreach ($this->indexesCollectionFactory->create()->getItems() as $index) {
                 /** @var IndexerInterface $index */
                 $this->indexes[$index->getId()] = $index;
             }
-
         }
 
         return $this->indexes;

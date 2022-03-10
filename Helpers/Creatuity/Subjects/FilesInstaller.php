@@ -1,31 +1,20 @@
 <?php
 
-namespace Creatuity\Base\Setup\Abstracts\Files\Installers;
+namespace Creatuity\Base\Helpers\Creatuity\Subjects;
 
 use Creatuity\Base\Helpers\Creatuity;
-use Creatuity\Base\Helpers\Creatuity\Subjects\ResourcesHelperException;
+use Creatuity\Base\Helpers\Creatuity\Subjects\Exception\ModuleNotSetException;
 use Magento\Framework\Exception\FileSystemException;
+use Magento\Framework\Exception\ValidatorException;
 
 /**
  * @license https://warrenappliedlabs.com/license
  * @copyright Copyright (c) 2008-* Joshua Warren (https://warrenappliedlabs.com)
  */
-class FilesInstaller
+class FilesInstaller extends SubjectAbstract implements SubjectForModuleInterface
 {
+    private string $moduleName = '';
     private string $filesDir = 'data/files';
-
-    /**
-     * @deprecated use $this->creatuity() method
-     */
-    private Creatuity $creatuity;
-
-    private string $className;
-
-    public function __construct(Creatuity $creatuity, string $className)
-    {
-        $this->creatuity = $creatuity;
-        $this->className = $className;
-    }
 
     /**
      * Example:
@@ -46,7 +35,7 @@ class FilesInstaller
 
         foreach ($dirsWithFiles as $dstDirInProject => $srcFiles) {
             foreach ((array)$srcFiles as $srcPathInModule) {
-                try{
+                try {
                     $this->installModuleDir($srcPathInModule, $dstDirInProject);
                 } catch (\Exception $e) {
                     $isOk = false;
@@ -72,7 +61,7 @@ class FilesInstaller
 
         foreach ($filesToDirs as $srPathInModule => $dstPathsInProject) {
             foreach ((array)$dstPathsInProject as $dstPathInProject) {
-                try{
+                try {
                     $this->installModuleFile($srPathInModule, $dstPathInProject);
                 } catch (\Exception $e) {
                     $isOk = false;
@@ -84,7 +73,7 @@ class FilesInstaller
         return $isOk;
     }
 
-    private function installModuleFile($srPathInModule, $dstPathInProject): void
+    private function installModuleFile(string $srPathInModule, string $dstPathInProject): void
     {
         $projectDirReader = $this->creatuity()->resources()->projectDirReader();
 
@@ -97,7 +86,7 @@ class FilesInstaller
         $this->installFile($srcPathInProject, $dstPathInProject);
     }
 
-    private function installModuleDir($srcPathInModule, $dstDirInProject): void
+    private function installModuleDir(string $srcPathInModule, string $dstDirInProject): void
     {
         $srcPathInProject = $this->determineSrcPath($srcPathInModule);
 
@@ -110,7 +99,7 @@ class FilesInstaller
      * @throws ResourcesHelperException
      * @throws FileSystemException
      */
-    private function installFile($srcPath, $dstPathInProject): void
+    private function installFile(string $srcPath, string $dstPathInProject): void
     {
         $projectDirWriter = $this->creatuity()->resources()->projectDirWriter();
 
@@ -169,18 +158,33 @@ class FilesInstaller
         return $isOk;
     }
 
+    /**
+     * @throws ResourcesHelperException
+     * @throws ValidatorException
+     * @throws ModuleNotSetException
+     */
     private function determineSrcPath($srcPathInModule): string
     {
-        try{
-            return $this->creatuity()->resources()->fileRelPath(
+        $this->ensureModuleIsSet();
+
+        try {
+            return $this->creatuity()->resources($this->moduleName)->fileRelPath(
                 $this->filesDir . '/' . $srcPathInModule);
         } catch ( ResourcesHelperException $e ) {
             return $this->creatuity()->resources()->fileRelPath($srcPathInModule);
         }
     }
 
-    private function creatuity(): Creatuity
+    public function forModule(string $moduleName): self
     {
-        return $this->creatuity;
+        $this->moduleName = $moduleName;
+        return $this;
+    }
+
+    public function ensureModuleIsSet(): void
+    {
+        if (empty($this->moduleName)) {
+            throw new Creatuity\Subjects\Exception\ModuleNotSetException();
+        }
     }
 }

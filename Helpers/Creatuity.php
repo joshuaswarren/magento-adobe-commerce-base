@@ -4,6 +4,7 @@ namespace Creatuity\Base\Helpers;
 
 use Creatuity\Base\Helpers\Creatuity\Subjects\Cms;
 use Creatuity\Base\Helpers\Creatuity\Subjects\CreatuityDemo;
+use Creatuity\Base\Helpers\Creatuity\Subjects\FilesInstaller;
 use Creatuity\Base\Helpers\Creatuity\Subjects\Logo;
 use Creatuity\Base\Helpers\Creatuity\Subjects\Database;
 use Creatuity\Base\Helpers\Creatuity\Subjects\Emulate;
@@ -115,6 +116,11 @@ class Creatuity
     public function processing(): Processing
     {
         return $this->obtainSubject('processing');
+    }
+
+    public function filesInstaller(string $forModule = ''): FilesInstaller
+    {
+        return $this->obtainModuleSubject('filesInstaller', $forModule);
     }
 
     public function forModule(string $moduleName): self
