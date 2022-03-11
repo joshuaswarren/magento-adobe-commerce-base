@@ -4,6 +4,7 @@ namespace Creatuity\Base\Setup\Patch\Data;
 
 use Creatuity\Base\Helpers\Creatuity;
 use Creatuity\Base\Helpers\Creatuity\Subjects\Cms as CmsUtility;
+use Creatuity\Base\Helpers\Creatuity\Subjects\Csv as CsvUtility;
 use Creatuity\Base\Helpers\Creatuity\Subjects\Database as DatabaseUtility;
 use Creatuity\Base\Helpers\Creatuity\Subjects\Emulate as EmulateUtility;
 use Creatuity\Base\Helpers\Creatuity\Subjects\FilesInstaller as FilesInstallerUtility;
@@ -32,6 +33,7 @@ class TestPatch implements DataPatchInterface
     private StoreUtility $storeUtility;
     private ThemeUtility $themeUtility;
     private LogoUtility $logoUtility;
+    private CsvUtility $csvUtility;
 
     public function __construct(
         CmsUtility $cmsUtility,
@@ -45,7 +47,8 @@ class TestPatch implements DataPatchInterface
         SettingUtility $settingUtility,
         StoreUtility $storeUtility,
         ThemeUtility $themeUtility,
-        LogoUtility $logoUtility
+        LogoUtility $logoUtility,
+        CsvUtility $csvUtility
     ) {
         $this->cmsUtility = $cmsUtility;
         $this->reportUtility = $reportUtility;
@@ -59,6 +62,7 @@ class TestPatch implements DataPatchInterface
         $this->storeUtility = $storeUtility;
         $this->themeUtility = $themeUtility;
         $this->logoUtility = $logoUtility;
+        $this->csvUtility = $csvUtility;
     }
 
     /**
@@ -67,13 +71,21 @@ class TestPatch implements DataPatchInterface
      */
     public function apply(): self
     {
+        $this->reportUtility->printMessage('Test Patch');
+
         /** Cms Subject Test */
         $this->cmsUtility->forModule('Creatuity_Base');
         $this->cmsUtility->blockSave('test-block');
         $this->cmsUtility->pageSave('test-page');
 
         /** Csv Subject Test */
-        /** todo: prepare */
+        $this->csvUtility->forModule('Creatuity_Base');
+        foreach ($this->csvUtility->parse('test.csv')->run() as $row) {
+            $this->reportUtility->printMessage('CSV New Line');
+            foreach ($row as $column => $value) {
+                $this->reportUtility->printMessage('   Column: ' . $column . ' Value: ' . $value);
+            }
+        }
 
         /** Database Subject Test */
         $sqlQueryResult = $this->databaseUtility->dbConnection()->fetchOne('SELECT value FROM core_config_data WHERE path = \'catalog/search/engine\'');

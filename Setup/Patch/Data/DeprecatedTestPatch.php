@@ -21,12 +21,19 @@ class DeprecatedTestPatch extends AbstractDataPatch
      */
     protected function applyPatch(): self
     {
+        $this->creatuity()->report()->printMessage('Deprecated Test Patch');
+
         /** Cms Subject Test */
         $this->creatuity()->cms()->blockSave('test-deprecated-block');
         $this->creatuity()->cms()->pageSave('test-deprecated-page');
 
         /** Csv Subject Test */
-        /** todo: prepare */
+        foreach ($this->creatuity()->csv()->parse('test.csv')->run() as $row) {
+            $this->creatuity()->report()->printMessage('CSV New Line');
+            foreach ($row as $column => $value) {
+                $this->creatuity()->report()->printMessage('   Column: ' . $column . ' Value: ' . $value);
+            }
+        }
 
         /** Database Subject Test */
         $sqlQueryResult = $this->creatuity()->database()->dbConnection()->fetchOne('SELECT value FROM core_config_data WHERE path = \'catalog/search/engine\'');
