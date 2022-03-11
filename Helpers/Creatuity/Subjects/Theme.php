@@ -51,7 +51,10 @@ class Theme extends SubjectAbstract
         foreach ($this->collectionFactory->create()->loadRegisteredThemes() as $theme) {
             if ($theme->getCode() === $themeCode) {
                 $this->themeConfig->assignToStore($theme, $stores, $scope);
+                return;
             }
         }
+
+        $this->creatuity()->report()->printError("'$themeCode' has not been found. Verify if code is existent.'");
     }
 }

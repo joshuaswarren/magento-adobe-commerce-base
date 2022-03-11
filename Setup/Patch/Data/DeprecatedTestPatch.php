@@ -21,19 +21,12 @@ class DeprecatedTestPatch extends AbstractDataPatch
      */
     protected function applyPatch(): self
     {
-        /** Report Subject Test */
-        $this->creatuity()->report()->printMessage('Creating test deprecated page and block...');
-
         /** Cms Subject Test */
         $this->creatuity()->cms()->blockSave('test-deprecated-block');
         $this->creatuity()->cms()->pageSave('test-deprecated-page');
 
-        /** FilesInstaller Subject Test */
-        $this->creatuity()->filesInstaller()->installByDirs([
-            'pub/media/wysiwyg' => [
-                'test-deprecated-img.png',
-            ],
-        ]);
+        /** Csv Subject Test */
+        /** todo: prepare */
 
         /** Database Subject Test */
         $sqlQueryResult = $this->creatuity()->database()->dbConnection()->fetchOne('SELECT value FROM core_config_data WHERE path = \'catalog/search/engine\'');
@@ -45,8 +38,18 @@ class DeprecatedTestPatch extends AbstractDataPatch
             $reportUtility->printSuccess('Ran inside runInSecuredArea method');
         });
 
+        /** FilesInstaller Subject Test */
+        $this->creatuity()->filesInstaller()->installByDirs([
+            'pub/media/wysiwyg' => [
+                'test-deprecated-img.png',
+            ],
+        ]);
+
         /** Indexer Subject Test */
         $this->creatuity()->indexer()->reindexCustomerGrid();
+
+        /** Logo Subject Test */
+        $this->creatuity()->creatuityLogo()->writeCreatuityLogo();
 
         /** Processing Subject Test */
         $toProcess = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20];
@@ -57,6 +60,12 @@ class DeprecatedTestPatch extends AbstractDataPatch
             $this->creatuity()->report()->printMessage('Processing batch: ' . implode(', ', $batch));
         }
 
+        /** Report Subject Test */
+        $this->creatuity()->report()->printMessage('Creating test deprecated page and block...');
+
+        /** Resources Subject Test */
+        /** todo: prepare */
+
         /** Seo Subject Test */
         $difficultUrl = '**Super Promotion**';
         $sanitizedUrl = $this->creatuity()->seo()->nameToSeoUrlKey($difficultUrl);
@@ -65,6 +74,13 @@ class DeprecatedTestPatch extends AbstractDataPatch
         /** Setting Subject Test */
         $searchEngineConfig = $this->creatuity()->setting()->load('catalog/search/engine');
         $this->creatuity()->report()->printSuccess('Database Search Engine: ' . $searchEngineConfig);
+
+        /** Store Subject Test */
+        $store = $this->creatuity()->store()->storeViewModel(1);
+        $this->creatuity()->report()->printMessage('Name of the store "1": ' . $store->getName());
+
+        /** Theme Subject Test */
+        $this->creatuity()->theme()->assignThemeToDefaultStore('notExistentThemeCode');
 
         return $this;
     }

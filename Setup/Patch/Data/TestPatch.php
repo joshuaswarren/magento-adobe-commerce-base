@@ -8,10 +8,13 @@ use Creatuity\Base\Helpers\Creatuity\Subjects\Database as DatabaseUtility;
 use Creatuity\Base\Helpers\Creatuity\Subjects\Emulate as EmulateUtility;
 use Creatuity\Base\Helpers\Creatuity\Subjects\FilesInstaller as FilesInstallerUtility;
 use Creatuity\Base\Helpers\Creatuity\Subjects\Indexer as IndexerUtility;
+use Creatuity\Base\Helpers\Creatuity\Subjects\Logo as LogoUtility;
 use Creatuity\Base\Helpers\Creatuity\Subjects\Processing as ProcessingUtility;
 use Creatuity\Base\Helpers\Creatuity\Subjects\Report as ReportUtility;
 use Creatuity\Base\Helpers\Creatuity\Subjects\Seo as SeoUtility;
 use Creatuity\Base\Helpers\Creatuity\Subjects\Setting as SettingUtility;
+use Creatuity\Base\Helpers\Creatuity\Subjects\Store as StoreUtility;
+use Creatuity\Base\Helpers\Creatuity\Subjects\Theme as ThemeUtility;
 use Exception;
 use Magento\Framework\Setup\Patch\DataPatchInterface;
 
@@ -26,6 +29,9 @@ class TestPatch implements DataPatchInterface
     private ProcessingUtility $processingUtility;
     private SeoUtility $seoUtility;
     private SettingUtility $settingUtility;
+    private StoreUtility $storeUtility;
+    private ThemeUtility $themeUtility;
+    private LogoUtility $logoUtility;
 
     public function __construct(
         CmsUtility $cmsUtility,
@@ -36,7 +42,10 @@ class TestPatch implements DataPatchInterface
         IndexerUtility $indexerUtility,
         ProcessingUtility $processingUtility,
         SeoUtility $seoUtility,
-        SettingUtility $settingUtility
+        SettingUtility $settingUtility,
+        StoreUtility $storeUtility,
+        ThemeUtility $themeUtility,
+        LogoUtility $logoUtility
     ) {
         $this->cmsUtility = $cmsUtility;
         $this->reportUtility = $reportUtility;
@@ -47,6 +56,9 @@ class TestPatch implements DataPatchInterface
         $this->processingUtility = $processingUtility;
         $this->seoUtility = $seoUtility;
         $this->settingUtility = $settingUtility;
+        $this->storeUtility = $storeUtility;
+        $this->themeUtility = $themeUtility;
+        $this->logoUtility = $logoUtility;
     }
 
     /**
@@ -55,21 +67,13 @@ class TestPatch implements DataPatchInterface
      */
     public function apply(): self
     {
-        /** Report Subject Test */
-        $this->reportUtility->printMessage('Creating test page and block...');
-
         /** Cms Subject Test */
         $this->cmsUtility->forModule('Creatuity_Base');
         $this->cmsUtility->blockSave('test-block');
         $this->cmsUtility->pageSave('test-page');
 
-        /** FilesInstaller Subject Test */
-        $this->filesInstaller->forModule('Creatuity_Base');
-        $this->filesInstaller->installByDirs([
-           'pub/media/wysiwyg' => [
-               'test-img.png',
-           ],
-        ]);
+        /** Csv Subject Test */
+        /** todo: prepare */
 
         /** Database Subject Test */
         $sqlQueryResult = $this->databaseUtility->dbConnection()->fetchOne('SELECT value FROM core_config_data WHERE path = \'catalog/search/engine\'');
@@ -81,8 +85,19 @@ class TestPatch implements DataPatchInterface
             $reportUtility->printSuccess('Ran inside runInSecuredArea method');
         });
 
+        /** FilesInstaller Subject Test */
+        $this->filesInstaller->forModule('Creatuity_Base');
+        $this->filesInstaller->installByDirs([
+            'pub/media/wysiwyg' => [
+                'test-img.png',
+            ],
+        ]);
+
         /** Indexer Subject Test */
         $this->indexerUtility->reindexCustomerGrid();
+
+        /** Logo Subject Test */
+        $this->logoUtility->writeCreatuityLogo();
 
         /** Processing Subject Test */
         $toProcess = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20];
@@ -93,6 +108,12 @@ class TestPatch implements DataPatchInterface
             $this->reportUtility->printMessage('Processing batch: ' . implode(', ', $batch));
         }
 
+        /** Report Subject Test */
+        $this->reportUtility->printMessage('Creating test page and block...');
+
+        /** Resources Subject Test */
+        /** todo: prepare */
+
         /** Seo Subject Test */
         $difficultUrl = '**Super Promotion**';
         $sanitizedUrl = $this->seoUtility->nameToSeoUrlKey($difficultUrl);
@@ -101,6 +122,13 @@ class TestPatch implements DataPatchInterface
         /** Setting Subject Test */
         $searchEngineConfig = $this->settingUtility->load('catalog/search/engine');
         $this->reportUtility->printSuccess('Database Search Engine: ' . $searchEngineConfig);
+
+        /** Store Subject Test */
+        $store = $this->storeUtility->storeViewModel(1);
+        $this->reportUtility->printMessage('Name of the store "1": ' . $store->getName());
+
+        /** Theme Subject Test */
+        $this->themeUtility->assignThemeToDefaultStore('notExistentThemeCode');
 
         return $this;
     }
