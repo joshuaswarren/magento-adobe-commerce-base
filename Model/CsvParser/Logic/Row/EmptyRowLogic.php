@@ -11,15 +11,15 @@ use Creatuity\Base\Model\CsvParser\UtilityInterface;
  */
 class EmptyRowLogic implements LogicInterface
 {
-    public function beforeProcess(UtilityInterface $utility)
+    public function beforeProcess(UtilityInterface $utility): void
     {
     }
 
-    public function processRow(array $rowData, UtilityInterface $utility)
+    public function processRow(array $rowData, UtilityInterface $utility): void
     {
     }
 
-    public function afterProcess(UtilityInterface $utility)
+    public function afterProcess(UtilityInterface $utility): void
     {
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Creatuity\Base\Helpers\Creatuity\Subjects;
 
+use Creatuity\Base\Helpers\Creatuity as CreatuityHelper;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -10,9 +11,17 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class Logo extends SubjectAbstract
 {
-    public function writeCreatuityLogo(OutputInterface $output)
+    private OutputInterface $output;
+
+    public function __construct(OutputInterface $output, CreatuityHelper $creatuity)
     {
-        $output->write('<fg=red;options=bold>_\\');
-        $output->write('</><fg=yellow;options=bold>.</><fg=red;options=bold>/_</> <fg=blue;options=bold>CREATUITY</>');
+        parent::__construct($creatuity);
+        $this->output = $output;
+    }
+
+    public function writeCreatuityLogo()
+    {
+        $this->output->write('<fg=red;options=bold>_\\');
+        $this->output->write('</><fg=yellow;options=bold>.</><fg=red;options=bold>/_</> <fg=blue;options=bold>CREATUITY</>');
     }
 }

@@ -156,17 +156,14 @@ final class CreatuityDemo extends SubjectAbstract
     public function demoDatabase()
     {
         // quick way to operate on database
-        $sql = $this->creatuity()->database()->connection()->select()
+        $sql = $this->creatuity()->database()->dbConnection()->select()
             ->from('table')
             ->where('something')
         ;
-        $results = $this->creatuity()->database()->connection()->fetchAll($sql);
+        $results = $this->creatuity()->database()->dbConnection()->fetchAll($sql);
 
         // running simple (potentially dynamic) query
         $this->creatuity()->database()->runSql("UPDATE table WHERE something");
-
-        // running bigger query from "[module]/data/sql/bigger_query.sql"
-        $this->creatuity()->database()->runSqlFile('bigger_query');
 
         // turns an array from the argument into
         // [
