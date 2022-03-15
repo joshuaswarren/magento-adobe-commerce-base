@@ -1,6 +1,6 @@
 <?php
 
-namespace Creatuity\Base\CommandLine\Tools;
+namespace Creatuity\Base\Command;
 
 use Creatuity\Base\Helpers\Tools\GridSynchronizer;
 use Symfony\Component\Console\Command\Command;

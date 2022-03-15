@@ -31,7 +31,8 @@
     <type name="Magento\Framework\Console\CommandList">
         <arguments>
             <argument name="commands" xsi:type="array">
-                <item name="creatuity:tools:grid-sync" xsi:type="object">Creatuity\Base\CommandLine\Tools\GridSynchronizeCommand</item>
+                <item name="creatuity:tools:grid-sync" xsi:type="object">Creatuity\Base\Command\GridSynchronizeCommand</item>
+                <item name="creatuity:tools:install-file" xsi:type="object">Creatuity\Base\Command\FilesInstallerCommand</item>
             </argument>
         </arguments>
     </type>
