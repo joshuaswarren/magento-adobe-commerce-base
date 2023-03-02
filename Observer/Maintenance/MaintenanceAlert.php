@@ -28,7 +28,9 @@ class MaintenanceAlert extends AbstractObserver
 
     public function execute(Observer $observer): void
     {
-        if ($this->isDisplayMaintenanceAlert($observer->getData('request'))) {
+        if (is_a($observer->getData('response'), Http::class, true)
+            && $this->isDisplayMaintenanceAlert($observer->getData('request'))
+        ) {
             $this->addAlertToPageContent($observer->getData('response'));
         }
     }
