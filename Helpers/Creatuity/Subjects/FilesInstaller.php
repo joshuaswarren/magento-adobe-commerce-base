@@ -148,7 +148,7 @@ class FilesInstaller extends SubjectAbstract implements SubjectForModuleInterfac
                 }
 
                 $projectDir->delete($file);
-                $this->creatuity()->report()->printSuccess("Removed '${file}'");
+                $this->creatuity()->report()->printSuccess("Removed '{$file}'");
             } catch (\Exception $e) {
                 $isOk = false;
                 $this->creatuity()->report()->printError("Cannot remove '$file': " . $e->getMessage(), $e);
