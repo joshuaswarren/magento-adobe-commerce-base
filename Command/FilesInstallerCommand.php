@@ -22,8 +22,10 @@ class FilesInstallerCommand extends Command
             ->setDescription(self::MESSAGE);
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): void
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln(self::MESSAGE);
+
+        return 0;
     }
 }
