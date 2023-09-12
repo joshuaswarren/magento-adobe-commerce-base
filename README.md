@@ -4,6 +4,6 @@
 
 Run this snippet from root of Your Magento 2 project:
 ```
-composer update joshuaswarren/magento-adobe-commerce-base2
+composer update joshuaswarren/magento-adobe-commerce-base
 ```
 
