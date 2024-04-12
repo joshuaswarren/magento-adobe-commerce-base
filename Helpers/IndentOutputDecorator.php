@@ -34,7 +34,7 @@ class IndentOutputDecorator implements OutputInterface
         $this->indent = str_repeat($indentChar, $indentSize);
     }
 
-    public function isDecorated()
+    public function isDecorated(): bool
     {
         return true;
     }
@@ -121,32 +121,32 @@ class IndentOutputDecorator implements OutputInterface
         return $this->decorated->setVerbosity($level);
     }
 
-    public function getVerbosity()
+    public function getVerbosity(): int
     {
         return $this->decorated->getVerbosity();
     }
 
-    public function isQuiet()
+    public function isQuiet(): bool
     {
         return $this->decorated->isQuiet();
     }
 
-    public function isVerbose()
+    public function isVerbose(): bool
     {
         return $this->decorated->isVerbose();
     }
 
-    public function isVeryVerbose()
+    public function isVeryVerbose(): bool
     {
         return $this->decorated->isVeryVerbose();
     }
 
-    public function isDebug()
+    public function isDebug(): bool
     {
         return $this->decorated->isDebug();
     }
 
-    public function setDecorated($decorated)
+    public function setDecorated(bool $decorated)
     {
         return $this->decorated->setDecorated($decorated);
     }
@@ -156,7 +156,7 @@ class IndentOutputDecorator implements OutputInterface
         return $this->decorated->setFormatter($formatter);
     }
 
-    public function getFormatter()
+    public function getFormatter(): OutputFormatterInterface
     {
         return $this->decorated->getFormatter();
     }
