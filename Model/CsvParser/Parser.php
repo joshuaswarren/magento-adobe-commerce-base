@@ -238,7 +238,7 @@ class Parser implements CsvParserInterface, UtilityInterface
         return $this;
     }
 
-    public function showProgress(OutputInterface $output = null, int $showProgressOnEveryChunk = null, string $progressMessage = null): self
+    public function showProgress(?OutputInterface $output = null, ?int $showProgressOnEveryChunk = null, ?string $progressMessage = null): self
     {
         $this->output = is_null($output) ? $this->outputFactory->create() : $output;
         $this->showProgressOnEveryChunk = !is_null($showProgressOnEveryChunk) ? $showProgressOnEveryChunk : static::DEFAULT_PROGRESS_STEP;

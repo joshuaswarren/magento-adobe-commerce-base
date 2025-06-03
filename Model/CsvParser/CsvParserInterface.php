@@ -26,7 +26,7 @@ interface CsvParserInterface extends \IteratorAggregate
 
     public function run(): ?array;
 
-    public function showProgress(OutputInterface $output = null, int $showProgressOnEveryChunk = null, string $progressMessage = null): self;
+    public function showProgress(?OutputInterface $output = null, ?int $showProgressOnEveryChunk = null, ?string $progressMessage = null): self;
 
     public function columnSeparator(string $separator): self;
 

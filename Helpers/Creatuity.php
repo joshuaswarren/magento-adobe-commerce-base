@@ -38,7 +38,7 @@ class Creatuity
     public function __construct(
         SubjectsFactory $subjectsFactory,
         OutputInterface $defaultOutput,
-        OutputInterface $output = null
+        ?OutputInterface $output = null
     ) {
         $this->subjectsFactory = $subjectsFactory;
         $this->output = $output ? $output : $defaultOutput;

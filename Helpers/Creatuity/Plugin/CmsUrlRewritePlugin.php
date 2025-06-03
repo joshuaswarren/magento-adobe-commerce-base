@@ -46,7 +46,7 @@ class CmsUrlRewritePlugin extends Page
     public function afterDelete(
         CmsPage $subject,
         AbstractDb $result,
-        AbstractModel $page = null
+        ?AbstractModel $page = null
     ) {
         //this is for magento 2.2 and up
         if (self::$enabled && method_exists(parent::class, 'afterDelete')) {
