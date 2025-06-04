@@ -44,7 +44,7 @@ class ReportNull extends Report
     {
     }
 
-    public function printError(string $txt, Exception $e = null): void
+    public function printError(string $txt, ?Exception $e = null): void
     {
     }
 

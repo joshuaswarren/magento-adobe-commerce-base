@@ -37,7 +37,7 @@ class Database implements Engine
     /**
      * @throws Zend_Db_Statement_Exception
      */
-    public function tryLock(string $name, int $timeout = null): bool
+    public function tryLock(string $name, ?int $timeout = null): bool
     {
         return $this->getConnection()->query('SELECT GET_LOCK(?, ?)', [$name, $timeout])->fetchColumn() == '1';
     }

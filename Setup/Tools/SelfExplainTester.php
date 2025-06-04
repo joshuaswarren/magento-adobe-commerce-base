@@ -15,7 +15,7 @@ class SelfExplainTester
         $this->warningMessageCodeLinesMinCount = $warningMessageCodeLinesMinCount;
     }
 
-    public function ensureIsSelfExplaining(object $instance, string $method, \Exception $nestedException = null): string
+    public function ensureIsSelfExplaining(object $instance, string $method, ?\Exception $nestedException = null): string
     {
         $codeLines = $this->determineFunctionCodeLines($instance, $method);
 

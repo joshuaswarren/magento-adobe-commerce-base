@@ -40,7 +40,7 @@ class File implements Engine
     /**
      * @throws FileSystemException
      */
-    public function tryLock(string $name, int $timeout = null): bool
+    public function tryLock(string $name, ?int $timeout = null): bool
     {
         $fp = $this->getLockFp($name);
 

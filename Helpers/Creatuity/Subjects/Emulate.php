@@ -85,12 +85,12 @@ class Emulate extends SubjectAbstract
         return $result;
     }
 
-    public function runWithConfig(string $path, $value, callable $callback, string $scopeType = ScopeInterface::SCOPE_STORE, string $scopeCode = null)
+    public function runWithConfig(string $path, $value, callable $callback, string $scopeType = ScopeInterface::SCOPE_STORE, ?string $scopeCode = null)
     {
         return $this->runWithConfigMany([$path => $value], $callback, $scopeType, $scopeCode);
     }
 
-    public function runWithConfigMany(array $settings, callable $callback, string $scopeType = ScopeInterface::SCOPE_STORE, string $scopeCode = null)
+    public function runWithConfigMany(array $settings, callable $callback, string $scopeType = ScopeInterface::SCOPE_STORE, ?string $scopeCode = null)
     {
         $prev = [];
         foreach (array_keys($settings) as $path) {

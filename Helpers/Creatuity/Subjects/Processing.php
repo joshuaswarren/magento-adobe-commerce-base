@@ -11,7 +11,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class Processing extends SubjectAbstract
 {
-    public function inChunk(array $dataToProcess, int $chunkSize, OutputInterface $output = null): Generator
+    public function inChunk(array $dataToProcess, int $chunkSize, ?OutputInterface $output = null): Generator
     {
         $output = $output ?: $this->creatuity()->report()->output();
         $dataSize = count($dataToProcess);

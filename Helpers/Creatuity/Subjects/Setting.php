@@ -42,14 +42,14 @@ class Setting extends SubjectAbstract
         $this->scope = $scope;
     }
 
-    public function saveMany(array $settings, string $scopeType = null, int $scope = null): void
+    public function saveMany(array $settings, ?string $scopeType = null, ?int $scope = null): void
     {
         foreach ($settings as $name => $value) {
             $this->save($name, $value, $scopeType, $scope);
         }
     }
 
-    public function save(string $name, $value, string $scopeType = null, int $scope = null): void
+    public function save(string $name, $value, ?string $scopeType = null, ?int $scope = null): void
     {
         $this->configResource->saveConfig($name, $value,
             $this->scopeType($scopeType),
@@ -60,17 +60,17 @@ class Setting extends SubjectAbstract
         $this->creatuity()->report()->printSuccess("Setting changed: '{$name}' => {$value}");
     }
 
-    public function prepened(string $name, $value, string $scopeType = null, int $scope = null): void
+    public function prepened(string $name, $value, ?string $scopeType = null, ?int $scope = null): void
     {
         $this->update(self::UPDATE_PREPEND, $name, $value, $scopeType, $scope);
     }
 
-    public function append(string $name, $value, string $scopeType = null, int $scope = null): void
+    public function append(string $name, $value, ?string $scopeType = null, ?int $scope = null): void
     {
         $this->update(self::UPDATE_APPEND, $name, $value, $scopeType, $scope);
     }
 
-    private function update(string $type, string $name, $value, string $scopeType = null, int $scope = null): void
+    private function update(string $type, string $name, $value, ?string $scopeType = null, ?int $scope = null): void
     {
         $oldValue = $this->getOldValue($name, $scopeType, $scope);
 
@@ -96,14 +96,14 @@ class Setting extends SubjectAbstract
         return (string)$collection->getFirstItem()->getData('value');
     }
 
-    public function deleteMany(array $names, string $scopeType = null, int $scope = null): void
+    public function deleteMany(array $names, ?string $scopeType = null, ?int $scope = null): void
     {
         foreach($names as $name) {
             $this->delete($name, $scopeType, $scope);
         }
     }
 
-    public function delete(string $name, string $scopeType = null, int $scope = null): void
+    public function delete(string $name, ?string $scopeType = null, ?int $scope = null): void
     {
         $this->configResource->deleteConfig($name,
             $this->scopeType($scopeType),
@@ -121,7 +121,7 @@ class Setting extends SubjectAbstract
      * @return mixed|null
      * @throws Exception
      */
-    public function load(string $name, $default = null, string $scopeType = null, int $scope = null)
+    public function load(string $name, $default = null, ?string $scopeType = null, ?int $scope = null)
     {
         $value = $this->appConfig->getValue($name,
             $this->scopeType($scopeType),
@@ -137,7 +137,7 @@ class Setting extends SubjectAbstract
     /**
      * @throws Exception
      */
-    private function scopeType(string $scopeType = null): string
+    private function scopeType(?string $scopeType = null): string
     {
         if ($scopeType === null) {
             $ret = $this->scopeType;
@@ -161,7 +161,7 @@ class Setting extends SubjectAbstract
         return $ret;
     }
 
-    private function scope(int $scope = null): int
+    private function scope(?int $scope = null): int
     {
         if ($scope === null) {
             $ret = $this->scope;

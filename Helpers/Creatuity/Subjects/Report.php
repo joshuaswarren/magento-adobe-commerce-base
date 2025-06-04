@@ -92,7 +92,7 @@ class Report extends SubjectAbstract
         ]);
     }
 
-    public function printError(string $txt, \Exception $e = null): void
+    public function printError(string $txt, ?\Exception $e = null): void
     {
         $this->newlineIfNeeded();
         $this->printCreatuityHeader();

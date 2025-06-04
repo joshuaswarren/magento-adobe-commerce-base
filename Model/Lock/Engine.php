@@ -10,7 +10,7 @@ interface Engine
 {
     public function lock(string $name): bool;
 
-    public function tryLock(string $name, int $timeout = null): bool;
+    public function tryLock(string $name, ?int $timeout = null): bool;
 
     public function unlock(string $name): bool;
 }

@@ -25,7 +25,7 @@ class MagentoVersion
     /**
      * @throws Exception
      */
-    public function ifLowerThan($magentoVersion, callable $toExecute = null): bool
+    public function ifLowerThan($magentoVersion, ?callable $toExecute = null): bool
     {
         if ($toExecute) {
             throw new Exception("Deprecated. Magento cannot handle anonymous functions in the compiler. Please use 'if (isLowerThan($magentoVersion)) {}' syntax.");
@@ -40,7 +40,7 @@ class MagentoVersion
     /**
      * @throws Exception
      */
-    public function ifHigherThan(string $magentoVersion, callable $toExecute = null): bool
+    public function ifHigherThan(string $magentoVersion, ?callable $toExecute = null): bool
     {
         if ($toExecute) {
             throw new Exception("Deprecated. Magento cannot handle anonymous functions in the compiler. Please use 'if (ifHigherThan($magentoVersion)) {}' syntax.");
@@ -55,7 +55,7 @@ class MagentoVersion
     /**
      * @throws Exception
      */
-    public function ifBetween(string $magentoVersionOldest, string $magentoVersionLatest, callable $toExecute = null): bool
+    public function ifBetween(string $magentoVersionOldest, string $magentoVersionLatest, ?callable $toExecute = null): bool
     {
         if ($toExecute) {
             throw new Exception("Deprecated. Magento cannot handle anonymous functions in the compiler. Please use 'if (ifBetween($magentoVersionOldest, $magentoVersionLatest)) {}' syntax.");
@@ -97,7 +97,7 @@ class MagentoVersion
         return null;
     }
 
-    private function processCondition(bool $condition, callable $toExecute = null): bool
+    private function processCondition(bool $condition, ?callable $toExecute = null): bool
     {
         if ($condition) {
             if (!$toExecute) {

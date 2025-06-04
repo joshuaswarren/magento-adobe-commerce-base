@@ -74,7 +74,7 @@ class Csv extends SubjectAbstract implements CsvParserInterface, SubjectForModul
         return $this;
     }
 
-    public function showProgress(OutputInterface $output = null, int $showProgressOnEveryChunk = null, string $progressMessage = null): self
+    public function showProgress(?OutputInterface $output = null, ?int $showProgressOnEveryChunk = null, ?string $progressMessage = null): self
     {
         $this->csvParser->showProgress($output, $showProgressOnEveryChunk, $progressMessage);
         return $this;
