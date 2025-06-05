@@ -40,7 +40,7 @@
     <preference for="Creatuity\Base\Model\CsvParser\CsvParserInterface" type="Creatuity\Base\Model\CsvParser\Parser" />
     <type name="Creatuity\Base\Model\CsvParser\Parser" shared="false" />
 
-    <preference for="Symfony\Component\Console\Output\OutputInterface" type="Symfony\Component\Console\Output\ConsoleOutput" />
+<!--    <preference for="Symfony\Component\Console\Output\OutputInterface" type="Symfony\Component\Console\Output\ConsoleOutput" />-->
 
     <preference for="Creatuity\Base\Model\Lock\Engine" type="Creatuity\Base\Model\Lock\Engine\File" />
 
