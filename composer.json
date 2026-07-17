@@ -1,6 +1,6 @@
 {
     "name": "joshuaswarren/magento-adobe-commerce-base",
-    "description": "Creatuity Base for Magento 2",
+    "description": "Base helper/utility module for Adobe Commerce",
     "type": "magento2-module",
     "version": "1.0.0",
     "authors": [
@@ -13,10 +13,11 @@
         "php": ">=7.4.0"
     },
     "autoload": {
-        "files": ["registration.php"],
+        "files": [
+            "registration.php"
+        ],
         "psr-4": {
             "Creatuity\\Base\\": ""
         }
     }
 }
-
