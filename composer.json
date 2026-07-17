@@ -5,8 +5,7 @@
     "version": "1.0.0",
     "authors": [
         {
-            "name": "Joshua Warren",
-            "homepage": "https://warrenappliedlabs.com/"
+            "name": "Joshua Warren"
         }
     ],
     "require": {
