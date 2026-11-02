@@ -8,3 +8,5 @@ dev/.deploy/
 
 /playground.*.php
 .idea/
+__pycache__/
+*.pyc
