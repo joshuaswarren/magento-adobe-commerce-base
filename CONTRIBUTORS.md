@@ -1,0 +1,16 @@
+# Contributors
+
+<!-- BEGIN GENERATED CONTRIBUTORS (contributors.yml; do not hand-edit) -->
+
+- [@creatuitydevelopers](https://github.com/creatuitydevelopers)
+- [@dszczerbinskii](https://github.com/dszczerbinskii)
+- [@kbalazy-creatuity](https://github.com/kbalazy-creatuity)
+- [@mlewandowski-creatuity](https://github.com/mlewandowski-creatuity)
+- [@tszmyt-creatuity](https://github.com/tszmyt-creatuity)
+
+_Listed are GitHub accounts only. Anonymous (email-only) commit authors
+cannot be enumerated through the GitHub API and are credited by hand in
+the sections above where known._
+
+<!-- END GENERATED CONTRIBUTORS -->
+
